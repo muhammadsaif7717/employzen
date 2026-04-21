@@ -1,0 +1,123 @@
+employzen/
+│
+├── public/
+│   ├── images/
+│   └── icons/
+│
+├── src/
+│   │
+│   ├── app/                         # Next.js App Router
+│   │   ├── (auth)/                  # Auth صفحات (route group)
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx
+│   │   │   ├── register/
+│   │   │   │   └── page.tsx
+│   │   │   └── layout.tsx
+│   │   │
+│   │   ├── (dashboard)/             # Protected Dashboard Routes
+│   │   │   ├── candidate/
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── profile/
+│   │   │   │   ├── applications/
+│   │   │   │   └── resume/
+│   │   │   │
+│   │   │   ├── employer/
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── post-job/
+│   │   │   │   ├── jobs/
+│   │   │   │   └── applicants/
+│   │   │   │
+│   │   │   ├── admin/
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── users/
+│   │   │   │   ├── jobs/
+│   │   │   │   └── approvals/
+│   │   │   │
+│   │   │   └── layout.tsx
+│   │   │
+│   │   ├── jobs/
+│   │   │   ├── page.tsx             # job listing
+│   │   │   └── [id]/
+│   │   │       └── page.tsx         # job details
+│   │   │
+│   │   ├── profile/
+│   │   │   └── [userId]/page.tsx    # public profile
+│   │   │
+│   │   ├── messages/                # chat UI
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── api/                     # Next.js API Routes
+│   │   │   ├── auth/
+│   │   │   │   └── [...nextauth]/route.ts
+│   │   │   │
+│   │   │   ├── users/
+│   │   │   │   ├── route.ts
+│   │   │   │   └── [id]/route.ts
+│   │   │   │
+│   │   │   ├── jobs/
+│   │   │   │   ├── route.ts
+│   │   │   │   ├── [id]/route.ts
+│   │   │   │   └── apply/route.ts
+│   │   │   │
+│   │   │   ├── applications/
+│   │   │   │   └── route.ts
+│   │   │   │
+│   │   │   ├── messages/
+│   │   │   │   └── route.ts
+│   │   │   │
+│   │   │   ├── admin/
+│   │   │   │   └── approve-job/route.ts
+│   │   │   │
+│   │   │   └── upload/
+│   │   │       └── route.ts         # resume upload
+│   │   │
+│   │   ├── layout.tsx
+│   │   └── page.tsx                # homepage
+│   │
+│   ├── components/                 # reusable UI components
+│   │   ├── ui/
+│   │   ├── shared/
+│   │   ├── forms/
+│   │   └── dashboard/
+│   │
+│   ├── features/                   # feature-based modules
+│   │   ├── auth/
+│   │   ├── jobs/
+│   │   ├── applications/
+│   │   ├── profile/
+│   │   └── messaging/
+│   │
+│   ├── lib/                        # core logic / helpers
+│   │   ├── db.ts                   # MongoDB connection
+│   │   ├── auth.ts                 # NextAuth config
+│   │   ├── utils.ts
+│   │   └── validations.ts
+│   │
+│   ├── hooks/
+│   │   ├── useAuth.ts
+│   │   ├── useUser.ts
+│   │   └── useJobs.ts
+│   │
+│   ├── contexts/                    # global state
+│   │   └── AuthProvider.tsx
+│   │
+│   ├── types/                      # TypeScript types
+│   │   ├── user.ts
+│   │   ├── job.ts
+│   │   └── application.ts
+│   │
+│   ├── services/                   # API calls (frontend)
+│   │   ├── job.service.ts
+│   │   ├── auth.service.ts
+│   │   └── user.service.ts
+│   │
+│   ├── constants/
+│   │   └── index.ts
+│   │
+│   └── styles/
+│       └── globals.css
+│
+├── .env.local
+├── next.config.js
+├── tsconfig.json
+└── package.json
