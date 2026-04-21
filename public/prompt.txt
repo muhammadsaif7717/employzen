@@ -1,0 +1,1005 @@
+================================================================
+        EMPLOYZEN — DESIGN SYSTEM & COLOR THEME REFERENCE
+        "Discover, Apply, Get Hired"
+================================================================
+Stack : Next.js + TypeScript + Tailwind CSS + shadcn/ui
+Version: 2.0
+
+PASTE THIS ENTIRE FILE into any AI chat before asking it to
+build any component for the Employzen project.
+================================================================
+
+
+╔══════════════════════════════════════════════════════════════╗
+║              ⚡ MANDATORY AI CODE RULES — READ FIRST          ║
+╚══════════════════════════════════════════════════════════════╝
+
+These rules MUST be followed for every single component generated.
+No exceptions.
+
+RULE 1 — FILE TYPE
+  Every component is a .tsx file (TypeScript + JSX).
+  File name: PascalCase → e.g. JobCard.tsx, CandidateSidebar.tsx
+
+RULE 2 — TYPESCRIPT INTERFACE (REQUIRED IN EVERY FILE)
+  Every component MUST define a TypeScript interface for its props
+  at the top of the file, before the component function.
+  Example:
+    interface JobCardProps {
+      id: string
+      title: string
+      company: string
+      location: string
+      salary: string
+      type: 'full-time' | 'part-time' | 'remote' | 'internship' | 'contract'
+      status: 'pending' | 'approved' | 'rejected'
+      postedAt: string
+      onClick?: () => void
+    }
+  If there are no props, still write: interface ComponentNameProps {}
+
+RULE 3 — STYLING: TAILWIND ONLY IN className=""
+  ALLOWED   : className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+  ALLOWED   : className={cn("base-class", condition && "extra-class")}
+  FORBIDDEN : style={{ color: '#fff', padding: '8px' }}
+  FORBIDDEN : CSS Modules (.module.css)
+  FORBIDDEN : styled-components or emotion
+  FORBIDDEN : Hardcoded hex colors anywhere in the file
+  ALL styling must be done through Tailwind utility classes in className="".
+
+RULE 4 — SHADCN/UI USAGE
+  Use shadcn/ui components as the BASE structure/behavior layer.
+  Override their appearance using the className prop with Tailwind.
+  Common shadcn imports:
+    import { Button }       from "@/components/ui/button"
+    import { Input }        from "@/components/ui/input"
+    import { Badge }        from "@/components/ui/badge"
+    import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+    import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+    import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+    import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+    import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+    import { Separator } from "@/components/ui/separator"
+    import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+    import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+    import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+    import { Textarea } from "@/components/ui/textarea"
+    import { Label } from "@/components/ui/label"
+    import { Checkbox } from "@/components/ui/checkbox"
+    import { Switch } from "@/components/ui/switch"
+    import { Progress } from "@/components/ui/progress"
+    import { Skeleton } from "@/components/ui/skeleton"
+    import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+    import { ScrollArea } from "@/components/ui/scroll-area"
+    import { Command, CommandInput, CommandList, CommandItem } from "@/components/ui/command"
+    import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+
+  Override example:
+    <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg">
+      Apply Now
+    </Button>
+
+RULE 5 — cn() UTILITY (class merging)
+  Always use cn() from shadcn for conditional/merged classes:
+    import { cn } from "@/lib/utils"
+    className={cn("base", isActive && "active-class", variant === 'primary' && "primary-class")}
+
+RULE 6 — DARK MODE
+  Every component must support dark mode.
+  Use Tailwind dark: prefix on every color class.
+  dark: classes are auto-activated via the "class" strategy in tailwind.config.ts.
+
+RULE 7 — AI AUTO-DETECTION FOR UNKNOWN/EXTRA COMPONENTS
+  If asked to build a component NOT listed in the known components
+  section of this file, the AI MUST:
+  (a) Identify the component PURPOSE and CONTEXT (which user role
+      sees it, what action it represents)
+  (b) Map it to the nearest semantic color from this theme:
+      User action / CTA        → blue-600 (primary)
+      Success / completion     → emerald-600
+      Warning / pending        → amber-600
+      Error / delete / reject  → red-600
+      Candidate context        → blue palette
+      Employer context         → teal palette
+      Admin context            → purple palette
+      Neutral / info display   → slate palette
+      Premium / highlight      → violet palette
+  (c) Use the card, input, badge, and button patterns from this file
+  (d) NEVER introduce a new color family not listed in this theme
+  (e) ALWAYS include a TypeScript interface and dark mode support
+
+RULE 8 — Responsive Design Requirement
+   All components must be fully responsive across every screen size and device type, including mobile, tablet, laptop, desktop, and large displays. Use Tailwind CSS responsive utilities to ensure layouts adapt seamlessly without breaking, overlapping, or causing horizontal scrolling at any viewport width.
+
+RULE 9 — UI/UX Quality Standard
+  The user interface must be clean, modern, and visually consistent, with strong attention to spacing, alignment, typography, and color harmony. The user experience should be intuitive, smooth, and user-friendly, ensuring easy navigation, clear interaction flow, and accessibility across all pages.
+
+RULE 10 — Production-Level Code Quality Standard
+   All code must be written at a production-ready standard, following clean code principles and industry best practices. Functions should be modular, reusable, and well-structured with a single responsibility. Code must be readable, maintainable, and scalable, with meaningful naming conventions and consistent patterns. Add clear, concise comments only where necessary to explain complex logic—not obvious code. Avoid redundancy, ensure proper error handling, and write code as a professional developer would in a real-world production system.
+
+RULE 11 — STATE MANAGEMENT DISCIPLINE
+    Local state (useState) only for UI-specific logic
+    Shared state must be minimal and intentional
+    Avoid unnecessary global state
+    Keep state as close as possible to where it is used
+    No over-engineering of state architecture
+
+RULE 12 — API LAYER SEPARATION
+    All API calls MUST be placed in /services or /lib/api
+    Components MUST NOT contain direct fetch/axios logic (unless trivial demo)
+    API functions must be reusable and typed
+    Always return consistent response structures
+    Handle loading, error, success explicitly
+
+RULE 13 — ERROR HANDLING STANDARD
+    Never ignore errors in async operations
+    Always implement try/catch for API calls
+    Show user-friendly error messages (not raw system errors)
+    Provide fallback UI for failed states
+    Prevent application crashes under all conditions
+
+RULE 14 — SCALABILITY REQUIREMENT
+    Every component must be reusable by design
+    Avoid hardcoded values; use props instead
+    Structure components for future feature expansion
+    Keep business logic separate from UI logic
+    Design with multi-role system in mind (Candidate / Employer / Admin)
+
+RULE 15 — UX FEEDBACK LOOP (CRITICAL)
+    Every user action MUST have feedback:
+    Loading state during async actions
+    Success confirmation on completion
+    Error feedback on failure
+    Buttons must show disabled state when processing
+    Avoid silent UI updates
+
+RULE 16 — CODE CONSISTENCY RULE
+    Maintain strict naming conventions:
+    Components → PascalCase
+    Functions → camelCase
+    Constants → UPPER_CASE
+    File names MUST match component names
+    Keep folder structure consistent across modules
+    Do not mix architectural patterns
+
+RULE 17 — ACCESSIBILITY ENHANCEMENT (A11Y+)
+    All interactive elements must be keyboard accessible
+    Ensure focus states are visible and clear
+    Use proper aria attributes when needed
+    Maintain minimum contrast ratio for readability
+    Avoid UI elements that rely only on color meaning
+
+RULE 18 — LOGIC SIMPLICITY RULE
+    Prefer simple logic over complex abstractions
+    Avoid premature optimization
+    If logic becomes complex, extract into utility functions
+    Keep components readable at first glance
+    Favor clarity over clever code
+
+RULE 19 — DEBUGGING FRIENDLINESS
+    Code must be easy to debug and trace
+    Use meaningful variable names (no abbreviations like x, tmp)
+    Avoid deeply nested logic
+    Keep side effects predictable
+    Log only in development mode if necessary
+
+RULE 20 — FINAL SYSTEM INTEGRITY RULE
+    Every component must:
+    Compile without warnings
+    Be production-safe
+    Follow all previous rules strictly
+    No rule can be skipped even for "small components"
+    Consistency > shortcuts
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 1 — BRAND IDENTITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Project Name  : Employzen
+Tagline       : "Discover, Apply, Get Hired"
+Brand Vibe    : Professional, Modern, Clean, Trustworthy
+Target Users  : Candidates, Employers, Admins
+
+Brand Personality:
+- Clean and minimal like LinkedIn
+- Modern gradients like Notion / Vercel
+- Trustworthy blue tones like Indeed
+- Slightly warm to feel approachable
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 2 — PRIMARY COLOR PALETTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PRIMARY (Brand Blue — main CTA, links, active states)
+  blue-50  : #eff6ff
+  blue-100 : #dbeafe
+  blue-200 : #bfdbfe
+  blue-300 : #93c5fd
+  blue-400 : #60a5fa
+  blue-500 : #3b82f6   ← MAIN BRAND COLOR
+  blue-600 : #2563eb   ← CTA Buttons
+  blue-700 : #1d4ed8
+  blue-800 : #1e40af
+  blue-900 : #1e3a8a
+
+ACCENT (Violet — highlights, badges, premium features)
+  violet-50  : #f5f3ff
+  violet-100 : #ede9fe
+  violet-400 : #a78bfa
+  violet-500 : #8b5cf6   ← MAIN ACCENT
+  violet-600 : #7c3aed
+  violet-700 : #6d28d9
+
+BRAND GRADIENT (hero, banners, special CTAs only):
+  Light mode : bg-gradient-to-r from-blue-600 to-violet-600
+  Dark mode  : bg-gradient-to-r from-blue-500 to-violet-500
+  Subtle bg  : bg-gradient-to-br from-blue-50 to-violet-50
+  Dark subtle: dark:from-blue-950/40 dark:to-violet-950/40
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 3 — NEUTRAL / GRAY SCALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use Tailwind "slate" ONLY (blue-tinted gray — pairs with brand blue):
+
+  slate-50   : #f8fafc  → page bg (light)
+  slate-100  : #f1f5f9  → subtle section bg (light)
+  slate-200  : #e2e8f0  → borders, dividers (light)
+  slate-300  : #cbd5e1  → input borders (light)
+  slate-400  : #94a3b8  → placeholder, muted icons
+  slate-500  : #64748b  → secondary text
+  slate-600  : #475569  → body text (light)
+  slate-700  : #334155  → headings (light)
+  slate-800  : #1e293b  → subtle card bg (dark)
+  slate-900  : #0f172a  → card bg (dark)
+  slate-950  : #020617  → page bg (dark)
+
+DO NOT use gray-*, zinc-*, or neutral-*. Only slate-*.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 4 — SEMANTIC / STATUS COLORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SUCCESS (Approved, Hired, Completed, Saved)
+  bg (light) : bg-emerald-50         bg (dark) : dark:bg-emerald-950
+  text (light): text-emerald-700     text (dark): dark:text-emerald-400
+  border      : border-emerald-200               dark:border-emerald-800
+  icon        : text-emerald-500
+  badge       : bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400
+
+WARNING (Pending, Incomplete, Review needed)
+  bg (light) : bg-amber-50           bg (dark) : dark:bg-amber-950
+  text (light): text-amber-700       text (dark): dark:text-amber-400
+  border      : border-amber-200                 dark:border-amber-800
+  icon        : text-amber-500
+  badge       : bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400
+
+DANGER / ERROR (Rejected, Error, Delete, Block)
+  bg (light) : bg-red-50             bg (dark) : dark:bg-red-950
+  text (light): text-red-700         text (dark): dark:text-red-400
+  border      : border-red-200                   dark:border-red-800
+  icon        : text-red-500
+  badge       : bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400
+
+INFO (Notifications, Tips, Informational banners)
+  bg (light) : bg-sky-50             bg (dark) : dark:bg-sky-950
+  text (light): text-sky-700         text (dark): dark:text-sky-400
+  border      : border-sky-200                   dark:border-sky-800
+  badge       : bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-400
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 5 — ROLE-BASED COLORS (per user type)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CANDIDATE (Job Seeker) → Blue palette
+  Primary         : blue-600
+  Accent          : violet-500
+  Dashboard bg    : bg-slate-50 dark:bg-slate-950
+  Sidebar active  : bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400
+  Sidebar border  : border-l-4 border-blue-600
+  Role badge      : bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400
+
+EMPLOYER (Recruiter / Company) → Teal palette
+  Primary         : teal-600
+  Accent          : cyan-500
+  Dashboard bg    : bg-slate-50 dark:bg-slate-950
+  Sidebar active  : bg-teal-50 text-teal-600 dark:bg-teal-950 dark:text-teal-400
+  Sidebar border  : border-l-4 border-teal-600
+  Role badge      : bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-400
+  CTA button      : bg-teal-600 hover:bg-teal-700 text-white
+
+ADMIN (Platform Controller) → Purple palette
+  Primary         : purple-700
+  Accent          : fuchsia-500
+  Dashboard bg    : bg-slate-50 dark:bg-slate-950
+  Sidebar active  : bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-400
+  Sidebar border  : border-l-4 border-purple-700
+  Role badge      : bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400
+  CTA button      : bg-purple-700 hover:bg-purple-800 text-white
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 6 — LIGHT MODE TOKENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BACKGROUNDS
+  Page             : bg-slate-50
+  Card / Panel     : bg-white
+  Subtle section   : bg-slate-100
+  Navbar           : bg-white border-b border-slate-200
+  Sidebar          : bg-white border-r border-slate-200
+  Modal            : bg-white
+  Input            : bg-white
+  Hover row        : hover:bg-slate-50
+  Active nav item  : bg-blue-50
+
+TEXT
+  Primary heading  : text-slate-900
+  Secondary heading: text-slate-700
+  Body text        : text-slate-600
+  Muted text       : text-slate-400
+  Link             : text-blue-600 hover:text-blue-700
+  Placeholder      : placeholder:text-slate-400
+  On colored bg    : text-white
+
+BORDERS
+  Default          : border-slate-200
+  Input            : border-slate-300 focus:border-blue-500
+  Card             : border-slate-200
+  Divider          : divide-slate-100
+
+SHADOWS
+  Card             : shadow-sm
+  Elevated         : shadow-md
+  Modal            : shadow-xl
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 7 — DARK MODE TOKENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BACKGROUNDS
+  Page             : dark:bg-slate-950
+  Card / Panel     : dark:bg-slate-900
+  Subtle section   : dark:bg-slate-800
+  Navbar           : dark:bg-slate-900 dark:border-slate-800
+  Sidebar          : dark:bg-slate-900 dark:border-slate-800
+  Modal            : dark:bg-slate-800
+  Input            : dark:bg-slate-800
+  Hover row        : dark:hover:bg-slate-800
+  Active nav item  : dark:bg-blue-950
+
+TEXT
+  Primary heading  : dark:text-slate-50
+  Secondary heading: dark:text-slate-200
+  Body text        : dark:text-slate-300
+  Muted text       : dark:text-slate-500
+  Link             : dark:text-blue-400 dark:hover:text-blue-300
+  Placeholder      : dark:placeholder:text-slate-500
+
+BORDERS
+  Default          : dark:border-slate-800
+  Input            : dark:border-slate-700 dark:focus:border-blue-500
+  Card             : dark:border-slate-800
+  Divider          : dark:divide-slate-800
+
+SHADOWS
+  Card             : dark:shadow-none dark:border dark:border-slate-800
+  Elevated         : dark:shadow-lg dark:shadow-black/30
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 8 — BUTTON STYLES (shadcn <Button> + className override)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PRIMARY (Apply Now, Post Job, Save, Submit)
+  <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold
+                     px-5 py-2.5 rounded-lg transition-colors duration-200
+                     focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                     disabled:opacity-50 disabled:cursor-not-allowed">
+
+SECONDARY (Cancel, Go Back, View Details)
+  <Button variant="outline"
+    className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300 font-medium
+               dark:bg-slate-800 dark:hover:bg-slate-700
+               dark:text-slate-200 dark:border-slate-700">
+
+GHOST (Nav links, icon-only actions)
+  <Button variant="ghost"
+    className="text-slate-600 hover:text-blue-600 hover:bg-blue-50
+               dark:text-slate-300 dark:hover:text-blue-400 dark:hover:bg-blue-950">
+
+DANGER (Delete, Block, Remove)
+  <Button className="bg-red-600 hover:bg-red-700 text-white font-semibold
+                     rounded-lg transition-colors">
+
+SUCCESS (Approve Job, Mark Hired)
+  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold
+                     rounded-lg transition-colors">
+
+EMPLOYER CTA (Post Job, Contact Candidate)
+  <Button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold
+                     rounded-lg transition-colors">
+
+ADMIN CTA (Approve, Manage, Override)
+  <Button className="bg-purple-700 hover:bg-purple-800 text-white font-semibold
+                     rounded-lg transition-colors">
+
+GRADIENT CTA (Hero section only)
+  <Button className="bg-gradient-to-r from-blue-600 to-violet-600
+                     hover:from-blue-700 hover:to-violet-700
+                     text-white font-bold px-8 py-3 rounded-xl
+                     shadow-lg shadow-blue-500/25 transition-all duration-200">
+
+ICON BUTTON (small, no label)
+  <Button variant="ghost" size="icon"
+    className="text-slate-400 hover:text-blue-600 hover:bg-blue-50
+               dark:hover:text-blue-400 dark:hover:bg-blue-950 rounded-lg">
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 9 — BADGE STYLES (shadcn <Badge> + className override)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Base class: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+
+JOB STATUS:
+  Pending  : <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400">
+  Approved : <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+  Rejected : <Badge className="bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400">
+  Closed   : <Badge className="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+
+APPLICATION STATUS:
+  Applied      : <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+  Shortlisted  : <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-400">
+  Interviewing : <Badge className="bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-400">
+  Hired        : <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+  Rejected     : <Badge className="bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400">
+
+USER ROLE:
+  Candidate : <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+  Employer  : <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-400">
+  Admin     : <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400">
+
+JOB TYPE:
+  Full-time  : <Badge className="bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
+  Part-time  : <Badge className="bg-violet-50 text-violet-600 dark:bg-violet-950 dark:text-violet-400">
+  Remote     : <Badge className="bg-teal-50 text-teal-600 dark:bg-teal-950 dark:text-teal-400">
+  Internship : <Badge className="bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
+  Contract   : <Badge className="bg-orange-50 text-orange-600 dark:bg-orange-950 dark:text-orange-400">
+
+SKILL CHIP (candidate profile tags):
+  <span className="bg-slate-100 text-slate-700 text-sm px-3 py-1 rounded-full
+                   dark:bg-slate-800 dark:text-slate-300">
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 10 — CARD STYLES (shadcn <Card> + className override)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DEFAULT CARD:
+  <Card className="bg-white border border-slate-200 rounded-xl shadow-sm
+                   dark:bg-slate-900 dark:border-slate-800">
+
+HOVER/CLICKABLE CARD (job listing):
+  <Card className="bg-white border border-slate-200 rounded-xl shadow-sm p-6
+                   hover:shadow-md hover:border-blue-300 transition-all duration-200
+                   cursor-pointer
+                   dark:bg-slate-900 dark:border-slate-800 dark:hover:border-blue-700">
+
+STAT CARD (dashboard analytics):
+  <Card className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm
+                   dark:bg-slate-900 dark:border-slate-800">
+
+FEATURED CARD (promoted jobs, top candidates):
+  <Card className="bg-gradient-to-br from-blue-50 to-violet-50
+                   border border-blue-200 rounded-xl shadow-sm
+                   dark:from-blue-950/40 dark:to-violet-950/40 dark:border-blue-900">
+
+PROFILE CARD:
+  <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden
+                   dark:bg-slate-900 dark:border-slate-800">
+
+FORM WRAPPER CARD:
+  <Card className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8
+                   dark:bg-slate-900 dark:border-slate-800">
+
+ALERT / NOTICE CARD:
+  Info    : <Card className="bg-sky-50 border border-sky-200 rounded-xl p-4 dark:bg-sky-950 dark:border-sky-800">
+  Success : <Card className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 dark:bg-emerald-950 dark:border-emerald-800">
+  Warning : <Card className="bg-amber-50 border border-amber-200 rounded-xl p-4 dark:bg-amber-950 dark:border-amber-800">
+  Error   : <Card className="bg-red-50 border border-red-200 rounded-xl p-4 dark:bg-red-950 dark:border-red-800">
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 11 — FORM / INPUT STYLES (shadcn + Tailwind override)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEXT INPUT:
+  <Input className="w-full px-4 py-2.5 rounded-lg border border-slate-300
+                    bg-white text-slate-900 placeholder:text-slate-400
+                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                    dark:bg-slate-800 dark:border-slate-700
+                    dark:text-slate-100 dark:placeholder:text-slate-500
+                    dark:focus:border-blue-500" />
+
+TEXTAREA:
+  <Textarea className="w-full px-4 py-3 rounded-lg border border-slate-300
+                       bg-white text-slate-900 placeholder:text-slate-400
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                       resize-none
+                       dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100" />
+
+LABEL:
+  <Label className="block text-sm font-medium text-slate-700 mb-1.5
+                    dark:text-slate-300">
+
+SELECT TRIGGER:
+  <SelectTrigger className="w-full border-slate-300 bg-white text-slate-900
+                             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                             dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100">
+
+ERROR MESSAGE:
+  <p className="text-sm text-red-600 mt-1.5 dark:text-red-400">Error text</p>
+
+HELPER TEXT:
+  <p className="text-sm text-slate-400 mt-1.5 dark:text-slate-500">Helper text</p>
+
+CHECKBOX:
+  <Checkbox className="border-slate-300 data-[state=checked]:bg-blue-600
+                       data-[state=checked]:border-blue-600 dark:border-slate-600" />
+
+SWITCH:
+  <Switch className="data-[state=checked]:bg-blue-600" />
+
+PROGRESS BAR:
+  <Progress className="h-2 bg-slate-200 dark:bg-slate-700"
+             indicatorClassName="bg-blue-600" />
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 12 — NAVIGATION / SIDEBAR STYLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NAVBAR (top):
+  Wrapper : "sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm
+             dark:bg-slate-900 dark:border-slate-800"
+  Logo    : "text-blue-600 font-bold text-xl tracking-tight"
+  NavLink : "text-slate-600 hover:text-blue-600 text-sm font-medium
+             transition-colors dark:text-slate-300 dark:hover:text-blue-400"
+
+SIDEBAR (dashboard):
+  Wrapper       : "w-64 min-h-screen bg-white border-r border-slate-200 flex flex-col
+                   dark:bg-slate-900 dark:border-slate-800"
+  Nav item      : "flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2
+                   text-slate-600 hover:bg-slate-100 hover:text-slate-900
+                   transition-colors text-sm font-medium
+                   dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+  Active item   : "flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2
+                   bg-blue-50 text-blue-600 font-semibold text-sm
+                   dark:bg-blue-950 dark:text-blue-400"
+  Section label : "px-4 pt-5 pb-1 text-xs font-semibold text-slate-400
+                   uppercase tracking-wider dark:text-slate-600"
+
+MOBILE NAV (shadcn Sheet):
+  <Sheet>
+    <SheetContent side="left"
+      className="w-64 p-0 bg-white border-r border-slate-200
+                 dark:bg-slate-900 dark:border-slate-800">
+
+BREADCRUMB:
+  Container  : "text-sm text-slate-500 dark:text-slate-400"
+  Separator  : "text-slate-300 dark:text-slate-600"
+  Active page: "text-slate-900 font-medium dark:text-slate-100"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 13 — TABLE STYLES (shadcn <Table> + className)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TABLE WRAPPER:
+  <div className="rounded-xl border border-slate-200 overflow-hidden
+                  dark:border-slate-800">
+
+TABLE HEADER:
+  <TableHeader className="bg-slate-50 dark:bg-slate-800/50">
+    <TableRow className="border-b border-slate-200 dark:border-slate-800">
+      <TableHead className="text-xs font-semibold text-slate-500 uppercase
+                            tracking-wide dark:text-slate-400">
+
+TABLE ROW:
+  <TableRow className="border-b border-slate-100 hover:bg-slate-50 transition-colors
+                       dark:border-slate-800 dark:hover:bg-slate-800/50">
+
+TABLE CELL:
+  <TableCell className="text-sm text-slate-700 dark:text-slate-300">
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 14 — DIALOG / MODAL (shadcn <Dialog>)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DIALOG CONTENT:
+  <DialogContent className="bg-white border border-slate-200 rounded-2xl shadow-xl
+                             dark:bg-slate-900 dark:border-slate-800 max-w-lg w-full">
+
+DIALOG HEADER:
+  <DialogHeader>
+    <DialogTitle className="text-xl font-semibold text-slate-900 dark:text-slate-50">
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 15 — TABS (shadcn <Tabs>)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TABS LIST:
+  <TabsList className="bg-slate-100 p-1 rounded-xl dark:bg-slate-800">
+
+TABS TRIGGER:
+  <TabsTrigger
+    className="rounded-lg text-sm font-medium text-slate-600
+               data-[state=active]:bg-white data-[state=active]:text-blue-600
+               data-[state=active]:shadow-sm
+               dark:text-slate-400
+               dark:data-[state=active]:bg-slate-900
+               dark:data-[state=active]:text-blue-400">
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 16 — AVATAR & SKELETON (shadcn)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AVATAR:
+  <Avatar className="w-10 h-10 ring-2 ring-white dark:ring-slate-900">
+    <AvatarImage src={avatarUrl} />
+    <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold
+                               dark:bg-blue-950 dark:text-blue-400">JD</AvatarFallback>
+  </Avatar>
+
+SKELETON (loading state):
+  <Skeleton className="h-4 w-full rounded-lg bg-slate-200 dark:bg-slate-800" />
+  <Skeleton className="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-800" />
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 17 — TYPOGRAPHY SCALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Font: Inter — @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap')
+Tailwind font class: font-sans
+
+HEADINGS:
+  H1 : "text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-50 tracking-tight"
+  H2 : "text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50"
+  H3 : "text-xl font-semibold text-slate-800 dark:text-slate-100"
+  H4 : "text-lg font-semibold text-slate-700 dark:text-slate-200"
+  H5 : "text-base font-semibold text-slate-700 dark:text-slate-200"
+
+BODY:
+  Large  : "text-lg text-slate-600 dark:text-slate-300"
+  Base   : "text-base text-slate-600 dark:text-slate-400"
+  Small  : "text-sm text-slate-500 dark:text-slate-400"
+  Tiny   : "text-xs text-slate-400 dark:text-slate-500"
+
+SPECIAL:
+  Gradient text : "bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent font-bold"
+  Highlight     : "text-blue-600 dark:text-blue-400 font-semibold"
+  Muted label   : "text-xs font-semibold text-slate-400 uppercase tracking-wider dark:text-slate-600"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 18 — ICON COLORS (lucide-react)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Default      : className="text-slate-400 w-5 h-5"
+Primary      : className="text-blue-600 w-5 h-5 dark:text-blue-400"
+Success      : className="text-emerald-500 w-5 h-5"
+Warning      : className="text-amber-500 w-5 h-5"
+Danger       : className="text-red-500 w-5 h-5"
+Muted        : className="text-slate-300 w-5 h-5 dark:text-slate-600"
+Employer     : className="text-teal-600 w-5 h-5 dark:text-teal-400"
+Admin        : className="text-purple-600 w-5 h-5 dark:text-purple-400"
+
+Icon bubble containers (for stat cards):
+  Blue    : "bg-blue-100 text-blue-600 p-2.5 rounded-xl dark:bg-blue-950 dark:text-blue-400"
+  Teal    : "bg-teal-100 text-teal-600 p-2.5 rounded-xl dark:bg-teal-950 dark:text-teal-400"
+  Violet  : "bg-violet-100 text-violet-600 p-2.5 rounded-xl dark:bg-violet-950 dark:text-violet-400"
+  Amber   : "bg-amber-100 text-amber-600 p-2.5 rounded-xl dark:bg-amber-950 dark:text-amber-400"
+  Red     : "bg-red-100 text-red-600 p-2.5 rounded-xl dark:bg-red-950 dark:text-red-400"
+  Emerald : "bg-emerald-100 text-emerald-600 p-2.5 rounded-xl dark:bg-emerald-950 dark:text-emerald-400"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 19 — TAILWIND CONFIG (tailwind.config.ts)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        brand: {
+          50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe',
+          500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a',
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        card: '0 1px 3px 0 rgb(0 0 0 / 0.08)',
+        'card-hover': '0 4px 12px 0 rgb(0 0 0 / 0.10)',
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+}
+export default config
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 20 — globals.css
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --border: 226 232 240;
+    --input: 203 213 225;
+    --primary: 37 99 235;
+    --primary-foreground: 255 255 255;
+    --ring: 59 130 246;
+  }
+  .dark {
+    --background: 2 6 23;
+    --foreground: 248 250 252;
+    --card: 15 23 42;
+    --card-foreground: 248 250 252;
+    --border: 30 41 59;
+    --input: 51 65 85;
+    --primary: 59 130 246;
+    --primary-foreground: 255 255 255;
+    --ring: 59 130 246;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    @apply dark:bg-slate-950 dark:text-slate-100;
+  }
+  ::selection {
+    @apply bg-blue-200 text-blue-900;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent;
+  }
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 21 — AI AUTO-DETECTION RULES (CRITICAL)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When asked to build any component — whether listed in Section 22
+or completely new/extra — the AI MUST follow these steps:
+
+STEP 1 — IDENTIFY CONTEXT (which user role uses this?)
+  Candidate context  → blue palette as primary
+  Employer context   → teal palette as primary
+  Admin context      → purple palette as primary
+  Public / shared    → blue palette as primary
+
+STEP 2 — IDENTIFY PURPOSE (what does this component do?)
+  Primary CTA / submit / apply      → blue-600 buttons + blue accents
+  Data display / read-only info     → white card + slate text (neutral)
+  Success / completion state        → emerald accents
+  Warning / attention / pending     → amber accents
+  Error / destructive / rejection   → red accents
+  Premium / featured / highlighted  → violet accents
+  Secondary info / tips             → sky accents
+
+STEP 3 — APPLY STRUCTURE (mandatory for ALL components)
+  (a) TypeScript interface at top of .tsx file
+  (b) shadcn/ui primitives as base (Button, Card, Input, Badge, etc.)
+  (c) All styling via Tailwind in className="" — NO inline styles
+  (d) Light + dark mode with dark: prefix on every color class
+  (e) Colors ONLY from Sections 2–5 — no new color families
+  (f) Use cn() from @/lib/utils for conditional class merging
+  (g) Follow card/button/badge/input patterns from Sections 8–11
+
+STEP 4 — CONCRETE EXAMPLES for extra/unknown components:
+
+  "Notification Bell Dropdown"
+    Context: Shared | Purpose: Info display
+    → Dropdown card: bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800
+    → Unread dot: bg-blue-600
+    → Unread item text: text-slate-900 dark:text-slate-100 font-medium
+    → Read item text: text-slate-500 dark:text-slate-400
+
+  "Company Logo Upload"
+    Context: Employer | Purpose: File input
+    → Dashed border zone: border-2 border-dashed border-teal-300 dark:border-teal-700
+    → Hover: hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-950/30
+    → Upload icon: text-teal-500
+
+  "Salary Range Slider"
+    Context: Candidate | Purpose: Filter/search control
+    → Track bg: bg-slate-200 dark:bg-slate-700
+    → Active range: bg-blue-600
+    → Thumb: bg-white border-2 border-blue-600
+
+  "Profile Completion Progress"
+    Context: Candidate | Purpose: Progress indicator
+    → Progress fill: bg-blue-600
+    → Track: bg-slate-200 dark:bg-slate-700
+    → Percentage label: text-blue-600 dark:text-blue-400 font-semibold
+
+  "Admin Analytics Chart"
+    Context: Admin | Purpose: Data visualization
+    → Card: bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800
+    → Chart color set: blue-500, teal-500, violet-500, amber-500
+
+  "Saved Jobs Bookmark Button"
+    Context: Candidate | Purpose: Toggle action
+    → Inactive: text-slate-400 hover:text-blue-600
+    → Active (saved): text-blue-600 dark:text-blue-400
+    → Hover bg: hover:bg-blue-50 dark:hover:bg-blue-950
+
+  "Step Progress Indicator (multi-step form)"
+    Context: Any | Purpose: Navigation state
+    → Completed step: bg-blue-600 text-white
+    → Current step: bg-white border-2 border-blue-600 text-blue-600
+    → Pending step: bg-slate-200 text-slate-400 dark:bg-slate-700
+
+  "Empty State Component"
+    Context: Any | Purpose: No data display
+    → Icon bubble: bg-slate-100 dark:bg-slate-800 text-slate-400
+    → Heading: text-slate-700 dark:text-slate-300 font-semibold
+    → Sub text: text-slate-400 dark:text-slate-500
+    → CTA button: primary blue button pattern
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 22 — KNOWN COMPONENTS LIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PUBLIC / SHARED:
+  - Navbar              (dark mode toggle, auth state, mobile Sheet)
+  - Footer
+  - Hero Section        (homepage, gradient CTA)
+  - Job Listing Page    (search + filter + sort + job cards grid)
+  - Job Details Page    (full job info + apply button)
+  - Login Page          (shadcn Card + Input + Button, role selector)
+  - Register Page       (role selector: Candidate / Employer)
+  - 404 / Error Page
+
+CANDIDATE:
+  - Candidate Dashboard        (stat cards, recent activity)
+  - Candidate Profile Page     (public view)
+  - Candidate Profile Editor   (editable form)
+  - Applications Tracker       (table with status badges)
+  - Resume Upload Section
+  - Online Resume Builder      (multi-step form UI)
+  - Saved / Bookmarked Jobs
+
+EMPLOYER:
+  - Employer Dashboard         (analytics: job views, applications)
+  - Company Profile Page       (public view)
+  - Company Profile Editor
+  - Post New Job Form          (multi-field form)
+  - My Jobs List               (table with status badges)
+  - Applicants List            (per job)
+  - Candidate Profile Viewer   (read-only view for employer)
+
+ADMIN:
+  - Admin Dashboard            (platform stats, charts)
+  - User Management Table      (all users, block/delete)
+  - Job Approvals Table        (approve/reject workflow)
+  - Reports Page
+
+SHARED FUNCTIONAL:
+  - Messages / Chat UI         (real-time, Socket.IO)
+  - Notification Dropdown
+  - Search & Filter Bar
+  - Dark Mode Toggle Button
+  - Sidebar (candidate / employer / admin variants)
+  - Loading Skeletons
+  - Empty State Components
+  - Confirmation Dialog (delete/block)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 23 — HOW TO USE THIS FILE (AI PROMPT TEMPLATE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Paste this ENTIRE file into a new AI chat.
+STEP 2: Use the template below, filling in the component name.
+
+─────────────────────────────────────────────────────────────
+[AFTER PASTING THIS FILE, ADD:]
+
+Using the Employzen design system above, build [COMPONENT NAME].
+
+Rules to follow:
+1. Output a single .tsx file
+2. TypeScript interface for all props at the top
+3. Use shadcn/ui components as the base structure
+4. Override all styling with Tailwind in className="" only
+5. No inline styles (style={{}}), no CSS modules
+6. Full light + dark mode support using dark: prefix
+7. Use ONLY the colors from the theme (no new color families)
+8. If this component is not in the known list, apply the
+   auto-detection rules from Section 21
+─────────────────────────────────────────────────────────────
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 24 — DARK MODE SETUP (next-themes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Install: npm install next-themes
+
+In src/app/layout.tsx:
+  import { ThemeProvider } from 'next-themes'
+  <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    {children}
+  </ThemeProvider>
+
+ThemeToggle.tsx component:
+  "use client"
+  import { useTheme } from 'next-themes'
+  import { Sun, Moon } from 'lucide-react'
+  import { Button } from '@/components/ui/button'
+
+  interface ThemeToggleProps {}
+
+  export default function ThemeToggle({}: ThemeToggleProps) {
+    const { theme, setTheme } = useTheme()
+    return (
+      <Button variant="ghost" size="icon"
+        className="text-slate-500 hover:text-blue-600 hover:bg-blue-50
+                   dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-950
+                   rounded-lg relative"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+        <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      </Button>
+    )
+  }
+
+
+================================================================
+  END OF EMPLOYZEN THEME REFERENCE
+  Version  : 2.0
+  Project  : Employzen Job Portal — "Discover, Apply, Get Hired"
+  Stack    : Next.js + TypeScript + Tailwind CSS + shadcn/ui
+  Database : MongoDB | Auth: NextAuth | Realtime: Socket.IO
+================================================================
