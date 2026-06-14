@@ -31,6 +31,8 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/contexts/AuthContext"
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -66,9 +68,9 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
 ]
 
 const ROLE_DASHBOARD_HREF: Record<NonNullable<UserRole>, string> = {
-  candidate: "/candidate/dashboard",
-  employer: "/employer/dashboard",
-  admin: "/admin/dashboard",
+  candidate: "/candidate",
+  employer: "/employer",
+  admin: "/admin",
 }
 
 const ROLE_BADGE_CLASS: Record<NonNullable<UserRole>, string> = {
@@ -483,6 +485,19 @@ export default function Navbar({
 }: NavbarProps) {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
+  const authContext = useAuth()
+
+  // Use passed user/onLogout if provided, else fall back to auth context
+  const activeUser = user || (authContext?.user ? {
+    name: authContext.user.role === "admin" ? (authContext.user.name || "Administrator") : (authContext.profile?.name || "User"),
+    email: authContext.user.email,
+    role: authContext.user.role,
+    avatarUrl: authContext.user.role === "admin" ? authContext.user.avatarUrl : authContext.profile?.avatarUrl,
+  } : null)
+
+  const handleLogout = onLogout || (() => {
+    authContext?.logout()
+  })
 
   // Add subtle shadow on scroll
   useEffect(() => {
@@ -491,7 +506,7 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", handler)
   }, [])
 
-  const notificationCount = user?.unreadNotifications ?? 0
+  const notificationCount = activeUser?.unreadNotifications ?? 0
 
   return (
     <header
@@ -566,10 +581,10 @@ export default function Navbar({
             <ThemeToggle />
 
             {/* Authenticated actions */}
-            {user ? (
+            {activeUser ? (
               <>
                 <NotificationBell count={notificationCount} />
-                <UserMenu user={user} onLogout={onLogout} />
+                <UserMenu user={activeUser} onLogout={handleLogout} />
               </>
             ) : (
               /* Guest auth buttons (desktop) */
@@ -597,9 +612,9 @@ export default function Navbar({
             {/* Mobile hamburger */}
             <MobileNav
               links={links}
-              user={user}
+              user={activeUser}
               pathname={pathname}
-              onLogout={onLogout}
+              onLogout={handleLogout}
             />
           </div>
         </div>

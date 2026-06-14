@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import Navbar from "@/components/shared/Navbar";
 import { cn } from "@/lib/utils";
 import ThemeProvider from "@/contexts/ThemeProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Footer from "@/components/shared/Footer";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -37,12 +38,15 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <Navbar />
-          {children}
-          <Footer/>
+          <AuthProvider>
+            <Navbar />
+            {children}
+            <Footer/>
+          </AuthProvider>
         </ThemeProvider>
       </body>
 
     </html>
   );
 }
+
