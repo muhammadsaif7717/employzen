@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axiosInstance from "@/services/axiosInstance";
-import { Building2, MapPin, ExternalLink, Briefcase, Search, Loader2 } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Briefcase, Search, Loader2, Globe, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 
@@ -13,11 +13,16 @@ interface Company {
   industry?: string;
   location?: string;
   description?: string;
+  website?: string;
 }
 
 interface Employer {
   _id: string;
   name: string;
+  phone?: string;
+  user: {
+    email: string;
+  };
   company: Company;
 }
 
@@ -153,13 +158,37 @@ export default function CompaniesPage() {
                 </p>
 
                 <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
-                    <MapPin className="h-4 w-4 mr-2 text-slate-400" />
-                    {employer.company?.location || "Remote / Global"}
-                  </div>
-                  <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
-                    <Briefcase className="h-4 w-4 mr-2 text-slate-400" />
-                    Registered Employer: {employer.name}
+                  {employer.company?.location && (
+                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
+                      <MapPin className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
+                      {employer.company.location}
+                    </div>
+                  )}
+                  {employer.company?.website && (
+                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
+                      <Globe className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
+                      <a href={employer.company.website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 hover:underline truncate">
+                        {employer.company.website.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  )}
+                  {employer.user?.email && (
+                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
+                      <Mail className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
+                      <a href={`mailto:${employer.user.email}`} className="hover:text-blue-500 hover:underline truncate">
+                        {employer.user.email}
+                      </a>
+                    </div>
+                  )}
+                  {employer.phone && (
+                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
+                      <Phone className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
+                      {employer.phone}
+                    </div>
+                  )}
+                  <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
+                    <Briefcase className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
+                    Employer: {employer.name}
                   </div>
                 </div>
 
