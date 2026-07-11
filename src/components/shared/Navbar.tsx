@@ -439,6 +439,12 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false)
   const authContext = useAuth()
 
+  // Hide Navbar on login and register pages
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+
+
   // Use passed user/onLogout if provided, else fall back to auth context
   const activeUser = user || (authContext?.user ? {
     name: authContext.user.role === "admin" ? (authContext.user.name || "Administrator") : (authContext.profile?.name || "User"),

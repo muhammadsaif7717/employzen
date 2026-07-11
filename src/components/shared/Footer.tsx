@@ -4,6 +4,7 @@
 /* eslint-disable react-hooks/purity */
 "use client"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   Briefcase,
   Mail,
@@ -179,6 +180,12 @@ export default function Footer({ year }: FooterProps) {
     () => year ?? new Date().getFullYear(),
     [year]
   )
+
+  const pathname = usePathname()
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+
 
   return (
     <footer
