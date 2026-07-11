@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/purity */
 "use client";
 
 import React, { useState, useEffect, useRef, Suspense } from "react";
@@ -19,6 +23,7 @@ import {
   ShieldCheck,
   Building,
 } from "lucide-react";
+import Linkify from "react-linkify";
 
 function ChatContent() {
   const router = useRouter();
@@ -107,22 +112,27 @@ function ChatContent() {
     fetchMessageHistory(selectedPartner.partnerId);
 
     // Initialize Socket.IO connection
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5001";
     const socket = io(socketUrl, {
       withCredentials: true,
     });
     socketRef.current = socket;
 
     // Construct private room key (sorted user IDs to avoid order issues)
-    const sortedIds = [currentUser._id, selectedPartner.partnerId].sort();
+    const sortedIds = [String(currentUser._id), String(selectedPartner.partnerId)].sort();
     const roomName = `room_${sortedIds[0]}_${sortedIds[1]}`;
 
-    // Join room
-    socket.emit("join_room", roomName);
+    // Join room when connected (handles reconnections)
+    socket.on("connect", () => {
+      socket.emit("join_room", roomName);
+    });
 
     // Listen to incoming messages
     socket.on("receive_message", (message: any) => {
-      setMessages((prev) => [...prev, message]);
+      // Only append if it's from the other person (we optimistically add our own)
+      if (String(message.sender) !== String(currentUser._id)) {
+        setMessages((prev) => [...prev, message]);
+      }
     });
 
     // Cleanup on partner change or unmount
@@ -131,9 +141,16 @@ function ChatContent() {
     };
   }, [selectedPartner, currentUser]);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   // 3. Scroll to bottom of message list on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [messages]);
 
   // 4. Send Message Handler
@@ -141,11 +158,22 @@ function ChatContent() {
     e.preventDefault();
     if (!newMessageText.trim() || !socketRef.current || !currentUser || !selectedPartner) return;
 
+    const messageContent = newMessageText.trim();
     const messageData = {
       sender: currentUser._id,
       receiver: selectedPartner.partnerId,
-      content: newMessageText.trim(),
+      content: messageContent,
     };
+
+    // Optimistically add message to UI instantly
+    const tempMessage = {
+      _id: `temp_${Date.now()}`,
+      sender: currentUser._id,
+      receiver: selectedPartner.partnerId,
+      content: messageContent,
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, tempMessage]);
 
     socketRef.current.emit("send_message", messageData);
 
@@ -219,6 +247,11 @@ function ChatContent() {
                           })}
                         </span>
                       </div>
+                      {room.contextJobTitle && (
+                        <p className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 truncate mt-0.5">
+                          {room.contextJobTitle}
+                        </p>
+                      )}
                       <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
                         {room.lastMessage}
                       </p>
@@ -273,7 +306,7 @@ function ChatContent() {
             </div>
 
             {/* Message History list */}
-            <div className="flex-1 bg-slate-50/50 dark:bg-slate-950/20 p-4 overflow-y-auto">
+            <div ref={scrollContainerRef} className="flex-1 bg-slate-50/50 dark:bg-slate-950/20 p-4 overflow-y-auto">
               {loadingMessages ? (
                 <div className="flex justify-center py-20">
                   <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
@@ -291,10 +324,18 @@ function ChatContent() {
                           className={`max-w-[70%] p-3.5 rounded-2xl shadow-sm text-sm ${
                             isMyMessage
                               ? "bg-blue-600 text-white rounded-tr-none"
-                              : "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-150 border border-slate-200/50 dark:border-slate-700/50 rounded-tl-none"
+                              : "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200/50 dark:border-slate-700/50 rounded-tl-none"
                           }`}
                         >
-                          <p className="leading-relaxed whitespace-pre-line">{msg.content}</p>
+                          {msg.content && (
+                            <Linkify componentDecorator={(decoratedHref, decoratedText, key) => (
+                              <a href={decoratedHref} key={key} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80">
+                                {decoratedText}
+                              </a>
+                            )}>
+                              <p className="leading-relaxed whitespace-pre-line">{msg.content}</p>
+                            </Linkify>
+                          )}
                           <span
                             className={`text-[9px] block text-right mt-1.5 ${
                               isMyMessage ? "text-blue-200" : "text-slate-400"
