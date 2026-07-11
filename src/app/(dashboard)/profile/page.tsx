@@ -423,17 +423,25 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Industry
+                      Industry / Category
                     </label>
                     <div className="relative">
                       <Tag className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-slate-400" />
-                      <Input
-                        type="text"
+                      <select
                         value={industry}
                         onChange={(e) => setIndustry(e.target.value)}
-                        placeholder="e.g. Technology, Fintech"
-                        className="h-11 pl-10 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700"
-                      />
+                        className="w-full h-11 pl-10 rounded-xl px-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all text-sm outline-none text-slate-700 dark:text-slate-300 appearance-none"
+                      >
+                        <option value="" disabled>Select an industry...</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Education">Education</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Other">Other</option>
+                      </select>
                     </div>
                   </div>
                 </div>
