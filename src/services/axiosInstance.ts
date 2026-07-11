@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable react-hooks/purity */
 import axios from "axios";
 
+const isServer = typeof window === "undefined";
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api/v1",
+  // Use absolute URL on server, and relative URL (proxy) on the client to avoid CORS and cookie issues
+  baseURL: isServer ? apiBaseUrl : "/api/v1",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
