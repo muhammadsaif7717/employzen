@@ -55,10 +55,15 @@ export default function CompaniesPage() {
   ];
 
   const filteredEmployers = employers.filter(employer => {
-    const matchesSearch = employer.company?.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          employer.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const industry = employer.company?.industry || "Other";
-    const matchesIndustry = selectedIndustry === "All" || industry === selectedIndustry;
+    const companyName = employer.company?.name || "";
+    const employerName = employer.name || "";
+    
+    const matchesSearch = companyName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          employerName.toLowerCase().includes(searchQuery.toLowerCase());
+                          
+    const industry = (employer.company?.industry || "Other").trim().toLowerCase();
+    const matchesIndustry = selectedIndustry === "All" || industry === selectedIndustry.trim().toLowerCase();
+    
     return matchesSearch && matchesIndustry;
   });
 
