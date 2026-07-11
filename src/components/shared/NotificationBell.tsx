@@ -47,10 +47,12 @@ export default function NotificationBell() {
     fetchNotifications()
   }, [user])
 
-  // Setup socket connection
+  // Setup polling since Socket.IO is disabled for Vercel
   useEffect(() => {
     if (!user) return
 
+    // Socket.IO is disabled for Vercel deployment
+    /*
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000"
     const socketInstance = io(socketUrl, {
       withCredentials: true,
@@ -70,6 +72,21 @@ export default function NotificationBell() {
     return () => {
       socketInstance.disconnect()
     }
+    */
+
+    // Polling fallback
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await axiosInstance.get("/notifications")
+        if (data.success) {
+          setNotifications(data.data)
+        }
+      } catch (error) {
+        console.error("Failed to fetch notifications during polling:", error)
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
   }, [user])
 
   const unreadCount = notifications.filter((n) => !n.isRead).length

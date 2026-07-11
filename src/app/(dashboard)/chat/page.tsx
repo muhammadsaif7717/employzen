@@ -111,6 +111,8 @@ function ChatContent() {
 
     fetchMessageHistory(selectedPartner.partnerId);
 
+    // Socket.IO is disabled for Vercel deployment
+    /*
     // Initialize Socket.IO connection
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5001";
     const socket = io(socketUrl, {
@@ -139,6 +141,18 @@ function ChatContent() {
     return () => {
       socket.disconnect();
     };
+    */
+
+    // Polling fallback for messages
+    const interval = setInterval(() => {
+      fetchMessageHistory(selectedPartner.partnerId);
+      // Also silently refresh rooms to update unread counts
+      axiosInstance.get("/chat/rooms").then(res => {
+        if (res.data?.success) setRooms(res.data.data);
+      }).catch(() => {});
+    }, 5000); // 5 seconds polling
+
+    return () => clearInterval(interval);
   }, [selectedPartner, currentUser]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -154,9 +168,9 @@ function ChatContent() {
   }, [messages]);
 
   // 4. Send Message Handler
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessageText.trim() || !socketRef.current || !currentUser || !selectedPartner) return;
+    if (!newMessageText.trim() || !currentUser || !selectedPartner) return;
 
     const messageContent = newMessageText.trim();
     const messageData = {
@@ -174,8 +188,21 @@ function ChatContent() {
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, tempMessage]);
+    setNewMessageText("");
 
-    socketRef.current.emit("send_message", messageData);
+    try {
+      // Send via REST API fallback since Socket.IO is disabled
+      const response = await axiosInstance.post("/chat/send", messageData);
+      
+      if (response.data?.success) {
+         // Replace temp message with actual message if needed, or just let polling handle it
+         // fetchMessageHistory(selectedPartner.partnerId); // optional immediate refresh
+      }
+    } catch (error) {
+      console.error("Failed to send message", error);
+      // Remove temp message if failed
+      setMessages((prev) => prev.filter(m => m._id !== tempMessage._id));
+    }
 
     // Clear temp status on first message
     if (selectedPartner.isTemp) {
@@ -183,9 +210,8 @@ function ChatContent() {
         prev.map((r) => (r.partnerId === selectedPartner.partnerId ? { ...r, isTemp: false } : r))
       );
     }
-
-    setNewMessageText("");
   };
+
 
   return (
     <div className="flex bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm h-[calc(100vh-64px-32px-180px)] overflow-hidden">
