@@ -41,8 +41,18 @@ export default function CompaniesPage() {
     fetchEmployers();
   }, []);
 
-  // Extract unique industries for filter
-  const industries = ["All", ...Array.from(new Set(employers.map(e => e.company?.industry || "Other").filter(Boolean)))];
+  // Predefined industries matching registration
+  const industries = [
+    "All",
+    "Information Technology",
+    "Healthcare",
+    "Finance",
+    "Education",
+    "Manufacturing",
+    "Retail",
+    "Marketing",
+    "Other"
+  ];
 
   const filteredEmployers = employers.filter(employer => {
     const matchesSearch = employer.company?.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -78,15 +88,20 @@ export default function CompaniesPage() {
               className="pl-10 h-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border-slate-200 dark:border-slate-700"
             />
           </div>
-          <select
-            value={selectedIndustry}
-            onChange={(e) => setSelectedIndustry(e.target.value)}
-            className="h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 md:w-64 outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {industries.map(industry => (
-              <option key={industry} value={industry}>{industry}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={selectedIndustry}
+              onChange={(e) => setSelectedIndustry(e.target.value)}
+              className="h-12 px-4 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 md:w-64 outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            >
+              {industries.map(industry => (
+                <option key={industry} value={industry}>{industry}</option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
         </div>
 
         {/* Companies Grid */}
