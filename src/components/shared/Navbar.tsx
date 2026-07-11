@@ -69,7 +69,6 @@ interface NavbarProps {
 const DEFAULT_NAV_LINKS: NavLink[] = [
   { label: "Find Jobs", href: "/jobs" },
   { label: "Companies", href: "/companies" },
-  { label: "Resources", href: "/resources" },
 ]
 
 const ROLE_DASHBOARD_HREF: Record<NonNullable<UserRole>, string> = {
@@ -439,12 +438,6 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false)
   const authContext = useAuth()
 
-  // Hide Navbar on login and register pages
-  if (pathname === '/login' || pathname === '/register') {
-    return null;
-  }
-
-
   // Use passed user/onLogout if provided, else fall back to auth context
   const activeUser = user || (authContext?.user ? {
     name: authContext.user.role === "admin" ? (authContext.user.name || "Administrator") : (authContext.profile?.name || "User"),
@@ -465,6 +458,11 @@ export default function Navbar({
   }, [])
 
   const notificationCount = activeUser?.unreadNotifications ?? 0
+
+  // Hide Navbar on login and register pages
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
 
   return (
     <header

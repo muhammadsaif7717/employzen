@@ -26,6 +26,7 @@ export default function RegisterPage() {
   // Role-specific fields
   const [title, setTitle] = useState(""); // Candidate
   const [companyName, setCompanyName] = useState(""); // Employer
+  const [industry, setIndustry] = useState(""); // Employer
 
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,6 +57,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (role === "employer" && !industry) {
+      setFormError("Please select your company industry.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload: any = {
@@ -70,6 +76,7 @@ export default function RegisterPage() {
         payload.title = title;
       } else if (role === "employer") {
         payload.companyName = companyName;
+        payload.industry = industry;
       }
 
       await register(payload);
@@ -266,19 +273,42 @@ export default function RegisterPage() {
 
             {/* Employer-specific fields */}
             {role === "employer" && (
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Company Name
-                </label>
-                <Input
-                  type="text"
-                  required
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="e.g. Stripe, Acme Corp"
-                  className="h-11 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                />
-              </div>
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Company Name
+                  </label>
+                  <Input
+                    type="text"
+                    required
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="e.g. Stripe, Acme Corp"
+                    className="h-11 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Industry / Category
+                  </label>
+                  <select
+                    required
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className="w-full h-11 rounded-xl px-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all text-sm outline-none text-slate-700 dark:text-slate-300"
+                  >
+                    <option value="" disabled>Select an industry...</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Education">Education</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </>
             )}
           </div>
 
