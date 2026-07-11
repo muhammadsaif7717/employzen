@@ -288,7 +288,7 @@ export default function LandingPage() {
                 className="border-white/40 hover:bg-white/10 text-white font-semibold px-6 py-3 rounded-xl transition-all"
                 asChild
               >
-                <Link href="/register?role=employer">Join as Employer</Link>
+                <Link href="/register?role=employer">Join as Company</Link>
               </Button>
             </div>
           </div>

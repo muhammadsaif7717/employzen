@@ -67,7 +67,7 @@ const LINK_GROUPS: FooterLinkGroup[] = [
       { label: "Post a Job", href: "/employer/post-job" },
       { label: "Browse Candidates", href: "/employer/candidates" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Employer Dashboard", href: "/employer" },
+      { label: "Company Dashboard", href: "/employer" },
       { label: "Company Profile", href: "/employer/profile" },
     ],
   },

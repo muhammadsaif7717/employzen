@@ -152,7 +152,7 @@ export default function RegisterPage() {
             }`}
           >
             <Building2 className="h-4 w-4 mb-1" />
-            Employer
+            Company
           </button>
           <button
             type="button"

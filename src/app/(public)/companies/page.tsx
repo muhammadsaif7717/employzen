@@ -61,10 +61,8 @@ export default function CompaniesPage() {
 
   const filteredEmployers = employers.filter(employer => {
     const companyName = employer.company?.name || "";
-    const employerName = employer.name || "";
     
-    const matchesSearch = companyName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          employerName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = companyName.toLowerCase().includes(searchQuery.toLowerCase());
                           
     const industry = (employer.company?.industry || "Other").trim().toLowerCase();
     const matchesIndustry = selectedIndustry === "All" || industry === selectedIndustry.trim().toLowerCase();
@@ -92,7 +90,7 @@ export default function CompaniesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
             <Input
               type="text"
-              placeholder="Search by company or employer name..."
+              placeholder="Search by company name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 h-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border-slate-200 dark:border-slate-700"
@@ -188,7 +186,7 @@ export default function CompaniesPage() {
                   )}
                   <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
                     <Briefcase className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
-                    Employer: {employer.name}
+                    Contact Person: {employer.name}
                   </div>
                 </div>
 

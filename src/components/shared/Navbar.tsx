@@ -88,7 +88,7 @@ const ROLE_BADGE_CLASS: Record<NonNullable<UserRole>, string> = {
 
 const ROLE_LABEL: Record<NonNullable<UserRole>, string> = {
   candidate: "Candidate",
-  employer: "Employer",
+  employer: "Company",
   admin: "Admin",
 }
 
