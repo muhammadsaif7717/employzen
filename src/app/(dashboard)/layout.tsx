@@ -4,9 +4,9 @@
 /* eslint-disable react-hooks/purity */
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
@@ -21,13 +21,21 @@ import {
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
-  // If user role is not determined yet, show loading/blank
-  if (!user) {
+  // Redirect to login if unauthenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, loading, pathname, router]);
+
+  // Show loading/blank while determining user state or redirecting
+  if (loading || !user) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-950 min-h-[50vh]">
         <div className="animate-pulse flex flex-col items-center">
           <div className="h-10 w-10 bg-slate-200 dark:bg-slate-800 rounded-full mb-4" />
           <div className="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded" />
@@ -35,6 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
     );
   }
+
 
   // Define sidebar navigation items based on user role
   const getNavItems = () => {
