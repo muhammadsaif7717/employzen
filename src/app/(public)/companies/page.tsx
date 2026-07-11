@@ -135,6 +135,7 @@ export default function CompaniesPage() {
                   <div className="flex items-center gap-4">
                     <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-inner overflow-hidden">
                       {employer.company?.logoUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img src={employer.company.logoUrl} alt={employer.company.name} className="h-full w-full object-cover" />
                       ) : (
                         <Building2 className="h-7 w-7 text-blue-500 dark:text-blue-400" />

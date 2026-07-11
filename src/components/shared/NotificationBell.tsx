@@ -8,7 +8,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { io, Socket } from "socket.io-client"
 import { useAuth } from "@/contexts/AuthContext"
 import axiosInstance from "@/services/axiosInstance"
 import { useRouter } from "next/navigation"
@@ -26,7 +25,6 @@ export default function NotificationBell() {
   const { user } = useAuth()
   const router = useRouter()
   const [notifications, setNotifications] = useState<INotification[]>([])
-  const [socket, setSocket] = useState<Socket | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
   // Fetch initial notifications
