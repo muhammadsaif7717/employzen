@@ -22,6 +22,7 @@ import {
   User,
   ShieldCheck,
   Building,
+  RefreshCw,
 } from "lucide-react";
 import Linkify from "react-linkify";
 
@@ -142,17 +143,6 @@ function ChatContent() {
       socket.disconnect();
     };
     */
-
-    // Polling fallback for messages
-    const interval = setInterval(() => {
-      fetchMessageHistory(selectedPartner.partnerId);
-      // Also silently refresh rooms to update unread counts
-      axiosInstance.get("/chat/rooms").then(res => {
-        if (res.data?.success) setRooms(res.data.data);
-      }).catch(() => {});
-    }, 5000); // 5 seconds polling
-
-    return () => clearInterval(interval);
   }, [selectedPartner, currentUser]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -216,7 +206,7 @@ function ChatContent() {
   return (
     <div className="flex bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm h-[calc(100vh-64px-32px-180px)] overflow-hidden">
       {/* Left Pane: Rooms / Chats List */}
-      <div className="w-full md:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full bg-slate-50/40 dark:bg-slate-950/10">
+      <div className={`w-full md:w-80 border-r border-slate-200 dark:border-slate-800 flex-col h-full bg-slate-50/40 dark:bg-slate-950/10 ${selectedPartner ? "hidden md:flex" : "flex"}`}>
         <div className="p-4 border-b border-slate-200 dark:border-slate-800">
           <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-blue-500" />
@@ -320,15 +310,32 @@ function ChatContent() {
                 </div>
               </div>
 
-              {/* Close chat (for mobile view back toggle) */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="md:hidden text-slate-500"
-                onClick={() => setSelectedPartner(null)}
-              >
-                Close
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-slate-500"
+                  onClick={() => {
+                    fetchMessageHistory(selectedPartner.partnerId);
+                    axiosInstance.get("/chat/rooms").then(res => {
+                      if (res.data?.success) setRooms(res.data.data);
+                    }).catch(() => {});
+                  }}
+                  title="Refresh messages"
+                >
+                  <RefreshCw className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Refresh</span>
+                </Button>
+                {/* Close chat (for mobile view back toggle) */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="md:hidden text-slate-500"
+                  onClick={() => setSelectedPartner(null)}
+                >
+                  Close
+                </Button>
+              </div>
             </div>
 
             {/* Message History list */}

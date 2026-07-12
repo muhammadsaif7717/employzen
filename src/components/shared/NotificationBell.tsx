@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Bell, Check } from "lucide-react"
+import { Bell, Check, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -80,6 +80,15 @@ export default function NotificationBell() {
     }
   }
 
+  const deleteAllNotifications = async () => {
+    try {
+      await axiosInstance.delete("/notifications/delete-all")
+      setNotifications([])
+    } catch (error) {
+      console.error("Failed to delete all notifications:", error)
+    }
+  }
+
   if (!user) return null
 
   return (
@@ -116,16 +125,29 @@ export default function NotificationBell() {
 
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <p className="font-semibold text-foreground">Notifications</p>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={markAllAsRead}
-              className="h-auto p-0 text-xs text-primary hover:text-primary/80 hover:bg-transparent font-medium"
-            >
-              <Check className="h-3 w-3 mr-1" />
-              Mark all as read
-            </Button>
+          {notifications.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Delete all"
+                onClick={deleteAllNotifications}
+                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-transparent"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+              {unreadCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Mark all as read"
+                  onClick={markAllAsRead}
+                  className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-transparent"
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           )}
         </div>
 
