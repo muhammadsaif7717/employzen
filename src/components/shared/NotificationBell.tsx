@@ -11,6 +11,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext"
 import axiosInstance from "@/services/axiosInstance"
 import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 interface INotification {
   _id: string
@@ -27,64 +28,30 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState<INotification[]>([])
   const [isOpen, setIsOpen] = useState(false)
 
-  // Fetch initial notifications
   useEffect(() => {
     if (!user) return
-
     const fetchNotifications = async () => {
       try {
         const { data } = await axiosInstance.get("/notifications")
-        if (data.success) {
-          setNotifications(data.data)
-        }
+        if (data.success) setNotifications(data.data)
       } catch (error) {
         console.error("Failed to fetch notifications:", error)
       }
     }
-
     fetchNotifications()
   }, [user])
 
-  // Setup polling since Socket.IO is disabled for Vercel
   useEffect(() => {
     if (!user) return
-
-    // Socket.IO is disabled for Vercel deployment
-    /*
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000"
-    const socketInstance = io(socketUrl, {
-      withCredentials: true,
-    })
-    
-    socketInstance.on("connect", () => {
-      console.log("NotificationBell socket connected, registering user:", user._id)
-      socketInstance.emit("register_user", user._id)
-    })
-
-    socketInstance.on("new_notification", (notification: INotification) => {
-      setNotifications((prev) => [notification, ...prev])
-    })
-
-    setSocket(socketInstance)
-
-    return () => {
-      socketInstance.disconnect()
-    }
-    */
-
-    // Polling fallback
     const interval = setInterval(async () => {
       try {
         const { data } = await axiosInstance.get("/notifications")
-        if (data.success) {
-          setNotifications(data.data)
-        }
+        if (data.success) setNotifications(data.data)
       } catch (error) {
         console.error("Failed to fetch notifications during polling:", error)
       }
-    }, 30000); // 30 seconds
-
-    return () => clearInterval(interval);
+    }, 30000)
+    return () => clearInterval(interval)
   }, [user])
 
   const unreadCount = notifications.filter((n) => !n.isRead).length
@@ -94,9 +61,7 @@ export default function NotificationBell() {
       try {
         await axiosInstance.patch(`/notifications/${notification._id}/read`)
         setNotifications((prev) =>
-          prev.map((n) =>
-            n._id === notification._id ? { ...n, isRead: true } : n
-          )
+          prev.map((n) => n._id === notification._id ? { ...n, isRead: true } : n)
         )
       } catch (error) {
         console.error("Failed to mark as read:", error)
@@ -124,16 +89,17 @@ export default function NotificationBell() {
           variant="ghost"
           size="icon"
           aria-label={`${unreadCount} unread notifications`}
-          className="relative text-slate-500 hover:text-blue-600 hover:bg-blue-50
-                     dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-950
-                     rounded-lg"
+          className="relative text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl"
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span
-              className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center
-                         justify-center rounded-full bg-blue-600 text-[10px]
-                         font-bold text-white leading-none"
+              className={cn(
+                "absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center",
+                "justify-center rounded-full bg-primary text-[10px]",
+                "font-bold text-primary-foreground leading-none",
+                "animate-pulse-dot"
+              )}
             >
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
@@ -143,17 +109,19 @@ export default function NotificationBell() {
 
       <DropdownMenuContent
         align="end"
-        className="w-80 bg-white border border-slate-200 rounded-xl shadow-md p-0
-                   dark:bg-slate-900 dark:border-slate-800"
+        className="w-80 bg-popover border border-border rounded-xl shadow-lg shadow-primary/5 p-0 animate-scale-in overflow-hidden"
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-          <p className="font-semibold text-slate-900 dark:text-slate-100">Notifications</p>
+        {/* Top accent border */}
+        <div className="h-0.5 gradient-brand w-full" />
+
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <p className="font-semibold text-foreground">Notifications</p>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={markAllAsRead}
-              className="h-auto p-0 text-xs text-blue-600 hover:text-blue-700 hover:bg-transparent dark:text-blue-400 dark:hover:text-blue-300"
+              className="h-auto p-0 text-xs text-primary hover:text-primary/80 hover:bg-transparent font-medium"
             >
               <Check className="h-3 w-3 mr-1" />
               Mark all as read
@@ -161,35 +129,40 @@ export default function NotificationBell() {
           )}
         </div>
 
-        <div className="max-h-[300px] overflow-y-auto">
+        <div className="max-h-[320px] overflow-y-auto scrollbar-none">
           {notifications.length === 0 ? (
-            <div className="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-              No notifications yet.
+            <div className="px-4 py-8 text-center">
+              <Bell className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No notifications yet.</p>
             </div>
           ) : (
             notifications.map((notification) => (
               <div
                 key={notification._id}
                 onClick={() => handleNotificationClick(notification)}
-                className={`flex flex-col gap-1 px-4 py-3 cursor-pointer border-b border-slate-50 dark:border-slate-800/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
-                  !notification.isRead ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
-                }`}
+                className={cn(
+                  "flex flex-col gap-1 px-4 py-3 cursor-pointer",
+                  "border-b border-border/50 last:border-0",
+                  "hover:bg-muted/60 transition-colors duration-150",
+                  !notification.isRead ? "bg-primary/5" : ""
+                )}
               >
                 <div className="flex items-start justify-between gap-2">
                   <p
-                    className={`text-sm ${
+                    className={cn(
+                      "text-sm leading-snug",
                       !notification.isRead
-                        ? "font-medium text-slate-900 dark:text-slate-100"
-                        : "text-slate-600 dark:text-slate-300"
-                    }`}
+                        ? "font-medium text-foreground"
+                        : "text-muted-foreground"
+                    )}
                   >
                     {notification.message}
                   </p>
                   {!notification.isRead && (
-                    <span className="h-2 w-2 rounded-full bg-blue-600 shrink-0 mt-1.5" />
+                    <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1.5 animate-pulse-dot" />
                   )}
                 </div>
-                <span className="text-xs text-slate-400 dark:text-slate-500">
+                <span className="text-xs text-muted-foreground/70">
                   {new Date(notification.createdAt).toLocaleDateString()}{" "}
                   {new Date(notification.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>

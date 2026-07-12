@@ -1,12 +1,8 @@
- 
- 
- 
- 
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import {
-  Briefcase,
   Mail,
   MapPin,
   Phone,
@@ -44,7 +40,6 @@ interface SocialLink {
 }
 
 interface FooterProps {
-  /** Current year override (defaults to real current year) */
   year?: number
 }
 
@@ -94,52 +89,20 @@ const LINK_GROUPS: FooterLinkGroup[] = [
 ]
 
 const SOCIAL_LINKS: SocialLink[] = [
-  {
-    label: "Twitter / X",
-    href: "https://twitter.com/employzen",
-    Icon: FaTwitter,
-  },
-  {
-    label: "LinkedIn",
-    href: "https://linkedin.com/company/employzen",
-    Icon: FaLinkedin,
-  },
-  {
-    label: "GitHub",
-    href: "https://github.com/employzen",
-    Icon: FaGithub,
-  },
-  {
-    label: "Facebook",
-    href: "https://facebook.com/employzen",
-    Icon: FaFacebook,
-  },
-  {
-    label: "Instagram",
-    href: "https://instagram.com/employzen",
-    Icon: FaInstagram,
-  },
+  { label: "Twitter / X", href: "https://twitter.com/employzen", Icon: FaTwitter },
+  { label: "LinkedIn", href: "https://linkedin.com/company/employzen", Icon: FaLinkedin },
+  { label: "GitHub", href: "https://github.com/employzen", Icon: FaGithub },
+  { label: "Facebook", href: "https://facebook.com/employzen", Icon: FaFacebook },
+  { label: "Instagram", href: "https://instagram.com/employzen", Icon: FaInstagram },
 ]
 
 const CONTACT_ITEMS = [
-  {
-    icon: <Mail className="h-4 w-4 shrink-0 text-blue-500" />,
-    label: "hello@employzen.com",
-    href: "mailto:hello@employzen.com",
-  },
-  {
-    icon: <Phone className="h-4 w-4 shrink-0 text-blue-500" />,
-    label: "+1 (800) 123-4567",
-    href: "tel:+18001234567",
-  },
-  {
-    icon: <MapPin className="h-4 w-4 shrink-0 text-blue-500" />,
-    label: "San Francisco, CA, USA",
-    href: null,
-  },
+  { icon: Mail, label: "hello@employzen.com", href: "mailto:hello@employzen.com" },
+  { icon: Phone, label: "+1 (800) 123-4567", href: "tel:+18001234567" },
+  { icon: MapPin, label: "San Francisco, CA, USA", href: null },
 ]
 
-// ─── Newsletter form (internal) ───────────────────────────────────────────────
+// ─── Newsletter form ──────────────────────────────────────────────────────────
 
 function NewsletterForm() {
   return (
@@ -152,19 +115,12 @@ function NewsletterForm() {
         type="email"
         placeholder="Enter your email"
         required
-        className="flex-1 px-4 py-2.5 rounded-lg border border-slate-300
-                   bg-white text-slate-900 placeholder:text-slate-400
-                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                   dark:bg-slate-800 dark:border-slate-700
-                   dark:text-slate-100 dark:placeholder:text-slate-500
-                   dark:focus:border-blue-500"
+        className="flex-1 bg-white/15 border-white/25 text-white placeholder:text-white/60
+                   focus-visible:border-white/60 focus-visible:ring-white/20 focus-visible:bg-white/20"
       />
       <Button
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold
-                   px-5 py-2.5 rounded-lg transition-colors duration-200
-                   focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                   shrink-0"
+        className="bg-white hover:bg-white/90 text-primary font-bold px-6 rounded-xl shrink-0 shadow-lg"
       >
         Subscribe
       </Button>
@@ -175,32 +131,28 @@ function NewsletterForm() {
 // ─── Footer (main export) ─────────────────────────────────────────────────────
 
 export default function Footer({ year }: FooterProps) {
-  // Bug fix 2: honour the `year` prop; fall back to the real current year
   const currentYear = React.useMemo(
     () => year ?? new Date().getFullYear(),
     [year]
   )
 
   const pathname = usePathname()
-  if (pathname === '/login' || pathname === '/register') {
-    return null;
-  }
-
+  if (pathname === '/login' || pathname === '/register') return null
 
   return (
     <footer
-      className="bg-white border-t border-slate-200 dark:bg-slate-900 dark:border-slate-800"
+      className="bg-card border-t border-border"
       aria-label="Site footer"
     >
-      {/* ── Top band: Newsletter CTA ──────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-blue-600 to-violet-600">
+      {/* ── Newsletter CTA Banner ─────────────────────────────────────── */}
+      <div className="gradient-brand">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-white font-[family-name:var(--font-heading)]">
                 Stay ahead in your career
               </h2>
-              <p className="text-blue-100 text-sm mt-1">
+              <p className="text-white/75 text-sm mt-1">
                 Get the latest job alerts and career tips delivered to your inbox.
               </p>
             </div>
@@ -211,57 +163,54 @@ export default function Footer({ year }: FooterProps) {
         </div>
       </div>
 
-      {/* ── Main links grid ───────────────────────────────────────────── */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-8">
+      {/* ── Main Links Grid ───────────────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10">
 
           {/* Brand column */}
-          <div className="sm:col-span-2 lg:col-span-2 space-y-5">
+          <div className="col-span-2 lg:col-span-2 space-y-5">
             {/* Logo */}
             <Link
               href="/"
-              className="inline-flex items-center gap-2 focus:outline-none
-                         focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+              className="inline-flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-xl"
               aria-label="Employzen home"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 shadow-sm">
-                <Briefcase className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-blue-600 font-bold text-xl tracking-tight">
-                Employ<span className="text-violet-600">zen</span>
+              <Image src="/images/logo.png" alt="Employzen Logo" width={48} height={48} className="rounded-xl bg-white p-2 object-contain shadow-sm ring-1 ring-border/50" />
+              <span className="font-bold text-xl tracking-tight font-[family-name:var(--font-heading)]">
+                <span className="gradient-text">Employ</span>
+                <span className="text-foreground">zen</span>
               </span>
             </Link>
 
             {/* Tagline */}
-            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               The modern job platform connecting talented candidates with the
               world&rsquo;s best companies.{" "}
-              <span className="text-blue-600 dark:text-blue-400 font-medium">
+              <span className="text-primary font-medium">
                 Discover, Apply, Get Hired.
               </span>
             </p>
 
             {/* Contact details */}
             <ul className="space-y-2.5" aria-label="Contact information">
-              {CONTACT_ITEMS.map((item) => (
-                <li key={item.label} className="flex items-center gap-2.5">
-                  {item.icon}
-                  {item.href ? (
-                    <a
-                      href={item.href}
-                      className="text-sm text-slate-500 hover:text-blue-600
-                                 dark:text-slate-400 dark:hover:text-blue-400
-                                 transition-colors"
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <span className="text-sm text-slate-500 dark:text-slate-400">
-                      {item.label}
-                    </span>
-                  )}
-                </li>
-              ))}
+              {CONTACT_ITEMS.map((item) => {
+                const Icon = item.icon
+                return (
+                  <li key={item.label} className="flex items-center gap-2.5">
+                    <Icon className="h-4 w-4 shrink-0 text-primary" />
+                    {item.href ? (
+                      <a
+                        href={item.href}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors duration-150"
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">{item.label}</span>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
 
             {/* Social icons */}
@@ -273,10 +222,9 @@ export default function Footer({ year }: FooterProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg
-                             text-slate-400 hover:text-blue-600 hover:bg-blue-50
-                             dark:hover:text-blue-400 dark:hover:bg-blue-950
-                             transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl
+                             text-muted-foreground hover:text-primary hover:bg-primary/10
+                             transition-all duration-150"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -287,7 +235,7 @@ export default function Footer({ year }: FooterProps) {
           {/* Link groups */}
           {LINK_GROUPS.map((group) => (
             <div key={group.heading} className="space-y-4">
-              <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider dark:text-slate-600">
+              <h3 className="text-xs font-bold text-foreground/50 uppercase tracking-widest">
                 {group.heading}
               </h3>
               <ul className="space-y-2.5" aria-label={group.heading}>
@@ -297,9 +245,8 @@ export default function Footer({ year }: FooterProps) {
                       href={link.href}
                       target={link.external ? "_blank" : undefined}
                       rel={link.external ? "noopener noreferrer" : undefined}
-                      className="inline-flex items-center gap-1 text-sm text-slate-500
-                                 hover:text-blue-600 dark:text-slate-400
-                                 dark:hover:text-blue-400 transition-colors group"
+                      className="inline-flex items-center gap-1 text-sm text-muted-foreground
+                                 hover:text-primary transition-colors duration-150 group"
                     >
                       {link.label}
                       {link.external && (
@@ -317,42 +264,37 @@ export default function Footer({ year }: FooterProps) {
         </div>
       </div>
 
-      <Separator className="bg-slate-100 dark:bg-slate-800" />
+      <Separator className="bg-border" />
 
       {/* ── Bottom bar ───────────────────────────────────────────────── */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-400 dark:text-slate-500 text-center sm:text-left">
-            &copy; {currentYear}{" "}
-            <span className="font-medium text-slate-500 dark:text-slate-400">
-              Employzen
-            </span>
-            . All rights reserved.
-          </p>
+      <div className="bg-muted/30">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-muted-foreground text-center sm:text-left">
+              &copy; {currentYear}{" "}
+              <span className="font-semibold text-foreground/70">Employzen</span>
+              . All rights reserved.
+            </p>
 
-          <div className="flex items-center gap-4" aria-label="Legal links">
-            {[
-              { label: "Privacy", href: "/privacy" },
-              { label: "Terms", href: "/terms" },
-              { label: "Cookies", href: "/cookies" },
-            ].map((item, index, arr) => (
-              <span key={item.href} className="flex items-center gap-4">
-                <Link
-                  href={item.href}
-                  className="text-xs text-slate-400 hover:text-blue-600
-                             dark:text-slate-500 dark:hover:text-blue-400
-                             transition-colors"
-                >
-                  {item.label}
-                </Link>
-                {index < arr.length - 1 && (
-                  <span
-                    className="h-3 w-px bg-slate-200 dark:bg-slate-700"
-                    aria-hidden="true"
-                  />
-                )}
-              </span>
-            ))}
+            <div className="flex items-center gap-4" aria-label="Legal links">
+              {[
+                { label: "Privacy", href: "/privacy" },
+                { label: "Terms", href: "/terms" },
+                { label: "Cookies", href: "/cookies" },
+              ].map((item, index, arr) => (
+                <span key={item.href} className="flex items-center gap-4">
+                  <Link
+                    href={item.href}
+                    className="text-xs text-muted-foreground hover:text-primary transition-colors duration-150"
+                  >
+                    {item.label}
+                  </Link>
+                  {index < arr.length - 1 && (
+                    <span className="h-3 w-px bg-border" aria-hidden="true" />
+                  )}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>

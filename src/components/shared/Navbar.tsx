@@ -1,24 +1,20 @@
- 
 /* eslint-disable @typescript-eslint/no-unused-vars */
- 
- 
+
 "use client"
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
   Menu,
-  X,
   Sun,
   Moon,
-  Bell,
   ChevronDown,
   Briefcase,
   User,
   LogOut,
-  Settings,
   LayoutDashboard,
   Search,
 } from "lucide-react"
@@ -32,7 +28,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/AuthContext"
@@ -57,9 +53,7 @@ interface NavLink {
 }
 
 interface NavbarProps {
-  /** Pass null when the user is not logged in */
   user?: NavUser | null
-  /** Override the default nav links */
   links?: NavLink[]
   onLogout?: () => void
 }
@@ -77,13 +71,10 @@ const ROLE_DASHBOARD_HREF: Record<NonNullable<UserRole>, string> = {
   admin: "/admin",
 }
 
-const ROLE_BADGE_CLASS: Record<NonNullable<UserRole>, string> = {
-  candidate:
-    "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
-  employer:
-    "bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-400",
-  admin:
-    "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400",
+const ROLE_BADGE_VARIANT: Record<NonNullable<UserRole>, string> = {
+  candidate: "bg-primary/10 text-primary border-primary/20",
+  employer: "bg-secondary/10 text-secondary border-secondary/20",
+  admin: "bg-warning/20 text-warning-foreground border-warning/30",
 }
 
 const ROLE_LABEL: Record<NonNullable<UserRole>, string> = {
@@ -92,30 +83,36 @@ const ROLE_LABEL: Record<NonNullable<UserRole>, string> = {
   admin: "Admin",
 }
 
-// ─── ThemeToggle (internal) ───────────────────────────────────────────────────
+// ─── ThemeToggle ──────────────────────────────────────────────────────────────
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!mounted) return <div className="size-9" />
 
   return (
     <Button
       variant="ghost"
       size="icon"
       aria-label="Toggle theme"
-      className="relative text-slate-500 hover:text-blue-600 hover:bg-blue-50
-                 dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-950
-                 rounded-lg"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10"
     >
-      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      {theme === "dark" ? (
+        <Sun className="h-5 w-5 transition-all" />
+      ) : (
+        <Moon className="h-5 w-5 transition-all" />
+      )}
     </Button>
   )
 }
 
-// Internal NotificationBell has been extracted to NotificationBell.tsx
-
-// ─── User Menu (internal) ─────────────────────────────────────────────────────
+// ─── User Menu ────────────────────────────────────────────────────────────────
 
 interface UserMenuProps {
   user: NavUser
@@ -130,70 +127,58 @@ function UserMenu({ user, onLogout }: UserMenuProps) {
     .toUpperCase()
     .slice(0, 2)
 
-  const dashboardHref =
-    user.role ? ROLE_DASHBOARD_HREF[user.role] : "/dashboard"
+  const dashboardHref = user.role ? ROLE_DASHBOARD_HREF[user.role] : "/dashboard"
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex items-center gap-2 rounded-xl px-2 py-1.5
-                     hover:bg-slate-100 dark:hover:bg-slate-800
-                     transition-colors focus:outline-none focus-visible:ring-2
-                     focus-visible:ring-blue-500"
+          className={cn(
+            "flex items-center gap-2 rounded-xl px-2 py-1.5",
+            "hover:bg-muted transition-colors duration-150",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+          )}
           aria-label="Open user menu"
         >
-          <Avatar className="h-8 w-8 ring-2 ring-white dark:ring-slate-900">
+          <Avatar className="h-8 w-8 ring-2 ring-primary/20">
             <AvatarImage src={user.avatarUrl} alt={user.name} />
-            <AvatarFallback
-              className="bg-blue-100 text-blue-600 font-semibold text-xs
-                         dark:bg-blue-950 dark:text-blue-400"
-            >
+            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
               {initials}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden md:block text-sm font-medium text-slate-700 dark:text-slate-200 max-w-[120px] truncate">
+          <span className="hidden md:block text-sm font-medium text-foreground max-w-[120px] truncate">
             {user.name}
           </span>
-          <ChevronDown className="h-4 w-4 text-slate-400 hidden md:block" />
+          <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
         </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         align="end"
-        className="w-60 bg-white border border-slate-200 rounded-xl shadow-md p-1
-                   dark:bg-slate-900 dark:border-slate-800"
+        className="w-60 bg-popover border border-border rounded-xl shadow-lg shadow-primary/5 p-1 animate-scale-in"
       >
         {/* User info header */}
         <div className="px-3 py-2.5">
-          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
-            {user.name}
-          </p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">
-            {user.email}
-          </p>
+          <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+          <p className="text-xs text-muted-foreground truncate mt-0.5">{user.email}</p>
           {user.role && (
-            <Badge
+            <span
               className={cn(
-                "mt-2 text-xs font-medium px-2 py-0.5",
-                ROLE_BADGE_CLASS[user.role]
+                "mt-2 inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-semibold border",
+                ROLE_BADGE_VARIANT[user.role]
               )}
             >
               {ROLE_LABEL[user.role]}
-            </Badge>
+            </span>
           )}
         </div>
 
-        <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800" />
+        <DropdownMenuSeparator className="bg-border" />
 
         <DropdownMenuItem asChild>
           <Link
             href={dashboardHref}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm
-                       text-slate-700 dark:text-slate-300 cursor-pointer
-                       hover:bg-slate-50 dark:hover:bg-slate-800
-                       hover:text-blue-600 dark:hover:text-blue-400
-                       focus:bg-slate-50 dark:focus:bg-slate-800"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground cursor-pointer hover:bg-muted hover:text-primary focus:bg-muted transition-colors"
           >
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
@@ -203,27 +188,18 @@ function UserMenu({ user, onLogout }: UserMenuProps) {
         <DropdownMenuItem asChild>
           <Link
             href="/profile"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm
-                       text-slate-700 dark:text-slate-300 cursor-pointer
-                       hover:bg-slate-50 dark:hover:bg-slate-800
-                       hover:text-blue-600 dark:hover:text-blue-400
-                       focus:bg-slate-50 dark:focus:bg-slate-800"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground cursor-pointer hover:bg-muted hover:text-primary focus:bg-muted transition-colors"
           >
             <User className="h-4 w-4" />
             My Profile
           </Link>
         </DropdownMenuItem>
 
-
-
-        <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800" />
+        <DropdownMenuSeparator className="bg-border" />
 
         <DropdownMenuItem
           onClick={onLogout}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm
-                     text-red-600 dark:text-red-400 cursor-pointer
-                     hover:bg-red-50 dark:hover:bg-red-950
-                     focus:bg-red-50 dark:focus:bg-red-950"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-destructive cursor-pointer hover:bg-destructive/10 focus:bg-destructive/10"
         >
           <LogOut className="h-4 w-4" />
           Log Out
@@ -233,7 +209,7 @@ function UserMenu({ user, onLogout }: UserMenuProps) {
   )
 }
 
-// ─── Mobile Drawer Nav (internal) ────────────────────────────────────────────
+// ─── Mobile Drawer Nav ────────────────────────────────────────────────────────
 
 interface MobileNavProps {
   links: NavLink[]
@@ -246,12 +222,7 @@ function MobileNav({ links, user, pathname, onLogout }: MobileNavProps) {
   const [open, setOpen] = useState(false)
 
   const initials = user
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : ""
 
   return (
@@ -261,9 +232,7 @@ function MobileNav({ links, user, pathname, onLogout }: MobileNavProps) {
           variant="ghost"
           size="icon"
           aria-label="Open navigation menu"
-          className="text-slate-600 hover:text-blue-600 hover:bg-blue-50
-                     dark:text-slate-300 dark:hover:text-blue-400 dark:hover:bg-blue-950
-                     rounded-lg lg:hidden"
+          className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl md:hidden"
         >
           <Menu className="h-5 w-5" />
         </Button>
@@ -271,65 +240,55 @@ function MobileNav({ links, user, pathname, onLogout }: MobileNavProps) {
 
       <SheetContent
         side="left"
-        className="w-72 p-0 bg-white border-r border-slate-200
-                   dark:bg-slate-900 dark:border-slate-800 flex flex-col"
+        className="w-72 p-0 bg-card border-r border-border flex flex-col"
       >
+        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+        <SheetDescription className="sr-only">Access navigation links</SheetDescription>
         {/* Drawer header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
-          <Link
-            href="/"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600">
-              <Briefcase className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-blue-600 font-bold text-lg tracking-tight">
-              Employ<span className="text-violet-600">zen</span>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2.5">
+            <Image src="/images/logo.png" alt="Employzen Logo" width={40} height={40} className="rounded-xl bg-white p-1.5 object-contain shadow-sm ring-1 ring-border/50" />
+            <span className="font-bold text-lg tracking-tight">
+              <span className="gradient-text">Employ</span>
+              <span className="text-foreground">zen</span>
             </span>
           </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Close navigation"
-            className="rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-            onClick={() => setOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </Button>
+          <SheetClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Close navigation"
+              className="rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted"
+            >
+              ✕
+            </Button>
+          </SheetClose>
         </div>
 
         {/* User info (if logged in) */}
         {user && (
-          <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="px-5 py-4 border-b border-border bg-muted/40">
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 ring-2 ring-white dark:ring-slate-900">
+              <Avatar className="h-10 w-10 ring-2 ring-primary/20">
                 <AvatarImage src={user.avatarUrl} alt={user.name} />
-                <AvatarFallback
-                  className="bg-blue-100 text-blue-600 font-semibold
-                             dark:bg-blue-950 dark:text-blue-400"
-                >
+                <AvatarFallback className="bg-primary/10 text-primary font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
-                  {user.name}
-                </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 truncate">
-                  {user.email}
-                </p>
+                <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
             </div>
             {user.role && (
-              <Badge
+              <span
                 className={cn(
-                  "mt-2 text-xs font-medium",
-                  ROLE_BADGE_CLASS[user.role]
+                  "mt-3 inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-semibold border",
+                  ROLE_BADGE_VARIANT[user.role]
                 )}
               >
                 {ROLE_LABEL[user.role]}
-              </Badge>
+              </span>
             )}
           </div>
         )}
@@ -342,28 +301,24 @@ function MobileNav({ links, user, pathname, onLogout }: MobileNavProps) {
               href={link.href}
               onClick={() => setOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
                 pathname === link.href
-                  ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               {link.label}
             </Link>
           ))}
 
-          {/* Authenticated quick links */}
           {user && (
             <>
-              <Separator className="my-2 bg-slate-100 dark:bg-slate-800" />
+              <Separator className="my-2 bg-border" />
               {user.role && (
                 <Link
                   href={ROLE_DASHBOARD_HREF[user.role]}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium
-                             text-slate-600 hover:bg-slate-100 hover:text-slate-900
-                             dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100
-                             transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-150"
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
@@ -372,24 +327,21 @@ function MobileNav({ links, user, pathname, onLogout }: MobileNavProps) {
               <Link
                 href="/profile"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium
-                           text-slate-600 hover:bg-slate-100 hover:text-slate-900
-                           dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100
-                           transition-colors"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-150"
               >
                 <User className="h-4 w-4" />
                 My Profile
               </Link>
-
             </>
           )}
         </nav>
 
         {/* Drawer footer */}
-        <div className="px-4 py-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+        <div className="px-4 py-4 border-t border-border space-y-2">
           {user ? (
             <Button
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg"
+              className="w-full bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20 rounded-xl font-semibold"
+              variant="ghost"
               onClick={() => {
                 setOpen(false)
                 onLogout?.()
@@ -400,24 +352,11 @@ function MobileNav({ links, user, pathname, onLogout }: MobileNavProps) {
             </Button>
           ) : (
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex-1 bg-white hover:bg-slate-50 text-slate-700 border-slate-300
-                           font-medium dark:bg-slate-800 dark:hover:bg-slate-700
-                           dark:text-slate-200 dark:border-slate-700"
-                asChild
-              >
-                <Link href="/login" onClick={() => setOpen(false)}>
-                  Log In
-                </Link>
+              <Button variant="outline" className="flex-1 rounded-xl" asChild>
+                <Link href="/login" onClick={() => setOpen(false)}>Log In</Link>
               </Button>
-              <Button
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg"
-                asChild
-              >
-                <Link href="/register" onClick={() => setOpen(false)}>
-                  Sign Up
-                </Link>
+              <Button variant="gradient" className="flex-1 rounded-xl" asChild>
+                <Link href="/register" onClick={() => setOpen(false)}>Sign Up</Link>
               </Button>
             </div>
           )}
@@ -438,75 +377,68 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false)
   const authContext = useAuth()
 
-  // Use passed user/onLogout if provided, else fall back to auth context
   const activeUser = user || (authContext?.user ? {
-    name: authContext.user.role === "admin" ? (authContext.user.name || "Administrator") : (authContext.profile?.name || "User"),
+    name: authContext.user.role === "admin"
+      ? (authContext.user.name || "Administrator")
+      : (authContext.profile?.name || "User"),
     email: authContext.user.email,
     role: authContext.user.role,
-    avatarUrl: authContext.user.role === "admin" ? authContext.user.avatarUrl : authContext.profile?.avatarUrl,
+    avatarUrl: authContext.user.role === "admin"
+      ? authContext.user.avatarUrl
+      : authContext.profile?.avatarUrl,
   } : null)
 
   const handleLogout = onLogout || (() => {
     authContext?.logout()
   })
 
-  // Add subtle shadow on scroll
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 4)
+    const handler = () => setScrolled(window.scrollY > 8)
     window.addEventListener("scroll", handler, { passive: true })
     return () => window.removeEventListener("scroll", handler)
   }, [])
 
-  const notificationCount = activeUser?.unreadNotifications ?? 0
-
-  // Hide Navbar on login and register pages
-  if (pathname === '/login' || pathname === '/register') {
-    return null;
-  }
+  if (pathname === '/login' || pathname === '/register') return null
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full bg-white border-b border-slate-200",
-        "dark:bg-slate-900 dark:border-slate-800",
-        "transition-shadow duration-200",
-        scrolled ? "shadow-sm" : "shadow-none"
+        "sticky top-0 z-50 w-full border-b border-border",
+        "transition-all duration-300",
+        scrolled
+          ? "bg-background/80 backdrop-blur-lg shadow-sm shadow-primary/5"
+          : "bg-background"
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
 
-          {/* ── Left: Logo + Nav Links ──────────────────────────────── */}
+          {/* ── Left: Logo + Nav Links ─────────────────── */}
           <div className="flex items-center gap-8">
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2 shrink-0 focus:outline-none
-                         focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+              className="flex items-center gap-2.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-xl"
               aria-label="Employzen home"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 shadow-sm">
-                <Briefcase className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-blue-600 font-bold text-xl tracking-tight">
-                Employ<span className="text-violet-600">zen</span>
+              <Image src="/images/logo.png" alt="Employzen Logo" width={40} height={40} className="rounded-xl bg-white p-1.5 object-contain shadow-sm ring-1 ring-border/50" />
+              <span className="font-bold text-xl tracking-tight font-[family-name:var(--font-heading)]">
+                <span className="gradient-text">Employ</span>
+                <span className="text-foreground">zen</span>
               </span>
             </Link>
 
             {/* Desktop nav links */}
-            <nav
-              className="hidden lg:flex items-center gap-1"
-              aria-label="Primary navigation"
-            >
+            <nav className="hidden md:flex items-center gap-1" aria-label="Primary navigation">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                    "px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150",
                     pathname === link.href
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
-                      : "text-slate-600 hover:text-blue-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-blue-400 dark:hover:bg-slate-800"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
                   {link.label}
@@ -515,17 +447,15 @@ export default function Navbar({
             </nav>
           </div>
 
-          {/* ── Right: Actions ───────────────────────────────────────── */}
+          {/* ── Right: Actions ──────────────────────────── */}
           <div className="flex items-center gap-1 sm:gap-2">
 
-            {/* Search button (desktop) */}
+            {/* Search button */}
             <Button
               variant="ghost"
               size="icon"
               aria-label="Search jobs"
-              className="hidden sm:flex text-slate-500 hover:text-blue-600 hover:bg-blue-50
-                         dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-950
-                         rounded-lg"
+              className="hidden sm:flex text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl"
               asChild
             >
               <Link href="/jobs">
@@ -543,23 +473,11 @@ export default function Navbar({
                 <UserMenu user={activeUser} onLogout={handleLogout} />
               </>
             ) : (
-              /* Guest auth buttons (desktop) */
-              <div className="hidden lg:flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300
-                             font-medium dark:bg-slate-800 dark:hover:bg-slate-700
-                             dark:text-slate-200 dark:border-slate-700 text-sm"
-                  asChild
-                >
+              <div className="hidden md:flex items-center gap-2">
+                <Button variant="outline" className="text-sm rounded-xl" asChild>
                   <Link href="/login">Log In</Link>
                 </Button>
-                <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold
-                             px-5 py-2.5 rounded-lg transition-colors duration-200
-                             focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm"
-                  asChild
-                >
+                <Button variant="gradient" className="text-sm rounded-xl px-5" asChild>
                   <Link href="/register">Get Started</Link>
                 </Button>
               </div>

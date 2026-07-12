@@ -5,6 +5,7 @@ import axiosInstance from "@/services/axiosInstance";
 import { Building2, MapPin, ExternalLink, Briefcase, Search, Loader2, Globe, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface Company {
   _id: string;
@@ -20,9 +21,7 @@ interface Employer {
   _id: string;
   name: string;
   phone?: string;
-  user: {
-    email: string;
-  };
+  user: { email: string };
   company: Company;
 }
 
@@ -46,156 +45,181 @@ export default function CompaniesPage() {
     fetchEmployers();
   }, []);
 
-  // Predefined industries matching registration
   const industries = [
-    "All",
-    "Information Technology",
-    "Healthcare",
-    "Finance",
-    "Education",
-    "Manufacturing",
-    "Retail",
-    "Marketing",
-    "Other"
+    "All", "Information Technology", "Healthcare", "Finance",
+    "Education", "Manufacturing", "Retail", "Marketing", "Other"
   ];
 
   const filteredEmployers = employers.filter(employer => {
     const companyName = employer.company?.name || "";
-    
     const matchesSearch = companyName.toLowerCase().includes(searchQuery.toLowerCase());
-                          
     const industry = (employer.company?.industry || "Other").trim().toLowerCase();
     const matchesIndustry = selectedIndustry === "All" || industry === selectedIndustry.trim().toLowerCase();
-    
     return matchesSearch && matchesIndustry;
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* Header Section */}
-        <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Discover Top <span className="text-blue-600 dark:text-blue-400">Companies</span>
+
+        {/* Header */}
+        <div className="text-center space-y-3 max-w-2xl mx-auto animate-fade-slide-up">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground font-[family-name:var(--font-heading)]">
+            Discover Top{" "}
+            <span className="gradient-text">Companies</span>
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
+          <p className="text-base sm:text-lg text-muted-foreground">
             Explore leading organizations across various industries actively hiring on Employzen.
           </p>
         </div>
 
-        {/* Search & Filter Section */}
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row gap-4">
+        {/* Search & Filter */}
+        <div
+          className={cn(
+            "bg-card border border-border p-3 sm:p-4 rounded-2xl",
+            "flex flex-col sm:flex-row gap-3",
+            "animate-fade-slide-up stagger-1"
+          )}
+        >
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               type="text"
               placeholder="Search by company name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border-slate-200 dark:border-slate-700"
+              className="pl-10"
             />
           </div>
           <div className="relative">
             <select
               value={selectedIndustry}
               onChange={(e) => setSelectedIndustry(e.target.value)}
-              className="h-12 px-4 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 md:w-64 outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+              className={cn(
+                "h-10 pl-3.5 pr-10 rounded-xl text-sm outline-none transition-all duration-150 appearance-none w-full sm:w-56",
+                "bg-muted/50 border border-border text-foreground",
+                "focus:border-primary focus:ring-3 focus:ring-primary/20 focus:bg-background",
+                "hover:border-border/80"
+              )}
             >
               {industries.map(industry => (
                 <option key={industry} value={industry}>{industry}</option>
               ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-muted-foreground">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
             </div>
           </div>
         </div>
 
         {/* Companies Grid */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="h-10 w-10 text-blue-500 animate-spin mb-4" />
-            <p className="text-slate-500 font-medium">Loading companies...</p>
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+            <p className="text-muted-foreground font-medium">Loading companies...</p>
           </div>
         ) : filteredEmployers.length === 0 ? (
-          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <Building2 className="h-16 w-16 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-            <h3 className="text-xl font-semibold text-slate-900 dark:text-white">No companies found</h3>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">Try adjusting your search or filters.</p>
+          <div className="text-center py-20 bg-card rounded-2xl border border-border animate-fade-in">
+            <Building2 className="h-14 w-14 mx-auto text-muted-foreground/30 mb-4" />
+            <h3 className="text-xl font-semibold text-foreground font-[family-name:var(--font-heading)]">
+              No companies found
+            </h3>
+            <p className="text-muted-foreground mt-2">Try adjusting your search or filters.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEmployers.map((employer) => (
-              <div 
-                key={employer._id} 
-                className="group bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300 flex flex-col h-full"
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredEmployers.map((employer, idx) => (
+              <div
+                key={employer._id}
+                className={cn(
+                  "group bg-card rounded-2xl p-5 sm:p-6 border border-border",
+                  "hover:shadow-lg hover:shadow-primary/5 hover:border-primary/25",
+                  "transition-all duration-200 hover:-translate-y-1 flex flex-col h-full",
+                  "animate-fade-slide-up",
+                  `stagger-${Math.min(idx + 1, 6)}`
+                )}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-inner overflow-hidden">
-                      {employer.company?.logoUrl ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={employer.company.logoUrl} alt={employer.company.name} className="h-full w-full object-cover" />
-                      ) : (
-                        <Building2 className="h-7 w-7 text-blue-500 dark:text-blue-400" />
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {employer.company?.name || employer.name}
-                      </h3>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 mt-1">
-                        {employer.company?.industry || "Other"}
-                      </span>
-                    </div>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/10 overflow-hidden shrink-0">
+                    {employer.company?.logoUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={employer.company.logoUrl}
+                        alt={employer.company.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Building2 className="h-7 w-7 text-primary" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors truncate font-[family-name:var(--font-heading)]">
+                      {employer.company?.name || employer.name}
+                    </h3>
+                    <span className="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-primary/10 text-primary border border-primary/15">
+                      {employer.company?.industry || "Other"}
+                    </span>
                   </div>
                 </div>
 
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 flex-grow line-clamp-3">
+                <p className="text-sm text-muted-foreground mb-5 flex-grow line-clamp-3 leading-relaxed">
                   {employer.company?.description || "No description provided for this company yet."}
                 </p>
 
-                <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="space-y-2 pt-4 border-t border-border">
                   {employer.company?.location && (
-                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
-                      <MapPin className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
-                      {employer.company.location}
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="h-3.5 w-3.5 mr-2 text-muted-foreground/60 shrink-0" />
+                      <span className="truncate">{employer.company.location}</span>
                     </div>
                   )}
                   {employer.company?.website && (
-                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
-                      <Globe className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
-                      <a href={employer.company.website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 hover:underline truncate">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Globe className="h-3.5 w-3.5 mr-2 text-muted-foreground/60 shrink-0" />
+                      <a
+                        href={employer.company.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-primary transition-colors truncate"
+                      >
                         {employer.company.website.replace(/^https?:\/\//, '')}
                       </a>
                     </div>
                   )}
                   {employer.user?.email && (
-                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
-                      <Mail className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
-                      <a href={`mailto:${employer.user.email}`} className="hover:text-blue-500 hover:underline truncate">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Mail className="h-3.5 w-3.5 mr-2 text-muted-foreground/60 shrink-0" />
+                      <a
+                        href={`mailto:${employer.user.email}`}
+                        className="hover:text-primary transition-colors truncate"
+                      >
                         {employer.user.email}
                       </a>
                     </div>
                   )}
                   {employer.phone && (
-                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
-                      <Phone className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
-                      {employer.phone}
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Phone className="h-3.5 w-3.5 mr-2 text-muted-foreground/60 shrink-0" />
+                      <span>{employer.phone}</span>
                     </div>
                   )}
-                  <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 truncate">
-                    <Briefcase className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
-                    Contact Person: {employer.name}
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Briefcase className="h-3.5 w-3.5 mr-2 text-muted-foreground/60 shrink-0" />
+                    <span className="truncate">Contact: {employer.name}</span>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-2">
+                <div className="mt-5">
                   <Link href={`/jobs?company=${employer.company?.name}`} className="w-full">
-                    <button className="w-full flex items-center justify-center px-4 py-2 bg-slate-50 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-xl transition-colors">
+                    <button className={cn(
+                      "w-full flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-semibold",
+                      "bg-muted hover:bg-primary/10 hover:text-primary text-muted-foreground",
+                      "border border-border hover:border-primary/30 transition-all duration-150"
+                    )}>
                       View Open Roles
-                      <ExternalLink className="h-4 w-4 ml-2" />
+                      <ExternalLink className="h-3.5 w-3.5 ml-2" />
                     </button>
                   </Link>
                 </div>

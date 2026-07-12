@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
- 
- 
- 
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -22,7 +20,9 @@ import {
   Users,
   Building2,
   CheckCircle,
+  Zap,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -56,56 +56,94 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex-1 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32 bg-gradient-to-b from-blue-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-violet-400/20 dark:bg-violet-600/10 rounded-full blur-3xl" />
+    <div className="flex-1 bg-background transition-colors duration-300">
+
+      {/* ── Hero Section ──────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden py-16 sm:py-24 lg:py-32">
+        {/* Decorative blobs */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] bg-secondary/10 dark:bg-secondary/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <Badge className="px-3 py-1 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-900/30 rounded-full text-xs font-semibold tracking-wide animate-pulse">
-            🔥 Over 10,000+ active roles listed today
-          </Badge>
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8">
+          {/* Pill badge */}
+          <div className="animate-fade-slide-up">
+            <Badge
+              className="px-4 py-1.5 bg-primary/10 text-primary border-primary/20 rounded-full text-xs font-semibold tracking-wide gap-1.5"
+              variant="outline"
+            >
+              <Zap className="h-3 w-3 text-primary" />
+              Over 10,000+ active roles listed today
+            </Badge>
+          </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-3xl mx-auto leading-tight">
-            Discover, Apply, and <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
-              Get Hired
-            </span>
+          {/* Headline */}
+          <h1
+            className={cn(
+              "text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight",
+              "text-foreground max-w-4xl mx-auto leading-[1.1]",
+              "animate-fade-slide-up stagger-1",
+              "font-[family-name:var(--font-heading)]"
+            )}
+          >
+            Discover, Apply, and{" "}
+            <br className="hidden sm:block" />
+            <span className="gradient-text">Get Hired</span>
           </h1>
 
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Employzen is the ultimate job portal connecting top-tier candidates with leading tech recruiters. Build your profile, craft CVs, and land your dream job easily.
+          {/* Subheadline */}
+          <p
+            className={cn(
+              "text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed",
+              "animate-fade-slide-up stagger-2"
+            )}
+          >
+            Employzen is the ultimate job portal connecting top-tier candidates
+            with leading tech recruiters. Build your profile, craft CVs, and land
+            your dream job easily.
           </p>
 
           {/* Search Box */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto p-2 rounded-2xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 shadow-xl"
-          >
-            <div className="flex-1 flex items-center gap-2 px-3 py-1">
-              <Search className="h-5 w-5 text-slate-400 shrink-0" />
-              <Input
-                type="text"
-                placeholder="Job title, keywords, or skills..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-none bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-slate-900 dark:text-white placeholder:text-slate-400"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="h-12 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all duration-200 shadow-md shadow-blue-500/25"
+          <div className="animate-fade-slide-up stagger-3">
+            <form
+              onSubmit={handleSearchSubmit}
+              className={cn(
+                "flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto",
+                "p-2 rounded-2xl",
+                "bg-card/80 backdrop-blur-lg border border-border",
+                "shadow-xl shadow-primary/5"
+              )}
             >
-              Search Jobs
-            </Button>
-          </form>
+              <div className="flex-1 flex items-center gap-2 px-3 py-1">
+                <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+                <Input
+                  type="text"
+                  placeholder="Job title, keywords, or skills..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border-none bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 h-auto px-0 text-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+              <Button
+                type="submit"
+                variant="gradient"
+                className="h-12 px-6 rounded-xl text-sm font-bold"
+              >
+                Search Jobs
+              </Button>
+            </form>
+          </div>
 
-          {/* Popular searches / Tags */}
-          <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400 pt-2">
-            <span>Popular searches:</span>
+          {/* Popular searches */}
+          <div
+            className={cn(
+              "flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground pt-2",
+              "animate-fade-slide-up stagger-4"
+            )}
+          >
+            <span className="font-medium">Popular:</span>
             {["React", "Node.js", "Python", "Remote", "UI/UX"].map((tag) => (
               <button
                 key={tag}
@@ -113,7 +151,11 @@ export default function LandingPage() {
                   setSearchQuery(tag);
                   router.push(`/jobs?search=${encodeURIComponent(tag)}`);
                 }}
-                className="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-xs font-medium transition-colors"
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-semibold border border-border",
+                  "bg-muted hover:bg-primary/10 hover:text-primary hover:border-primary/30",
+                  "transition-all duration-150"
+                )}
               >
                 {tag}
               </button>
@@ -122,53 +164,74 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Analytics/Features Highlight */}
-      <section className="py-12 bg-white dark:bg-slate-900 border-y border-slate-200/50 dark:border-slate-800/50">
+      {/* ── Features / Stats Strip ────────────────────────────────────── */}
+      <section className="py-10 sm:py-14 bg-card border-y border-border">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
-                <TrendingUp className="h-6 w-6" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            {[
+              {
+                icon: TrendingUp,
+                color: "text-primary",
+                bg: "bg-primary/10",
+                title: "Instant Applications",
+                desc: "Apply with a single click and track in real-time.",
+                delay: "stagger-1",
+              },
+              {
+                icon: Users,
+                color: "text-secondary",
+                bg: "bg-secondary/10",
+                title: "Interactive Chat",
+                desc: "Direct, instant chat between candidates and employers.",
+                delay: "stagger-2",
+              },
+              {
+                icon: Building2,
+                color: "text-success",
+                bg: "bg-success/10",
+                title: "CV Builder Tool",
+                desc: "Create and download dynamic printable resumes.",
+                delay: "stagger-3",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className={cn(
+                  "flex items-start sm:items-center gap-4 p-5 rounded-2xl",
+                  "hover:bg-muted/60 transition-colors duration-200",
+                  "animate-fade-slide-up",
+                  item.delay
+                )}
+              >
+                <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-xl", item.bg)}>
+                  <item.icon className={cn("h-6 w-6", item.color)} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground font-[family-name:var(--font-heading)]">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mt-0.5">{item.desc}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-slate-950 dark:text-white text-lg">Instant Applications</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">Apply with a single click and track in real-time.</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950 text-violet-600 dark:text-violet-400">
-                <Users className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-950 dark:text-white text-lg">Interactive Chat</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">Direct, instant chat between candidates and employers.</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400">
-                <Building2 className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-950 dark:text-white text-lg">CV Builder Tool</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">Create and download dynamic printable resumes.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Recent Jobs Listings */}
-      <section className="py-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+      {/* ── Recent Job Listings ────────────────────────────────────────── */}
+      <section className="py-12 sm:py-16 lg:py-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Recent Job Openings</h2>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">Find the latest opportunities posted by top companies.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-[family-name:var(--font-heading)]">
+              Recent Job Openings
+            </h2>
+            <p className="text-muted-foreground mt-1.5 text-sm sm:text-base">
+              Find the latest opportunities posted by top companies.
+            </p>
           </div>
           <Button
             variant="ghost"
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold flex items-center hover:bg-transparent"
+            className="text-primary hover:text-primary/80 font-semibold flex items-center hover:bg-primary/10"
             asChild
           >
             <Link href="/jobs">
@@ -179,81 +242,88 @@ export default function LandingPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
               <div
                 key={n}
-                className="h-48 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 animate-pulse"
+                className="h-52 rounded-2xl bg-card border border-border animate-shimmer"
               />
             ))}
           </div>
         ) : recentJobs.length === 0 ? (
-          <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
-            <Briefcase className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">No jobs available right now</h3>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">Check back later or register to post a job.</p>
+          <div className="text-center py-16 sm:py-20 bg-card rounded-2xl border border-border">
+            <Briefcase className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-foreground">No jobs available right now</h3>
+            <p className="text-muted-foreground mt-1">Check back later or register to post a job.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentJobs.map((job) => {
-              const companyInitials = job.company?.name
-                ?.split(" ")
-                ?.map((n: string) => n[0])
-                ?.join("")
-                ?.toUpperCase()
-                ?.slice(0, 2) || "CO";
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {recentJobs.map((job, idx) => {
+              const companyInitials =
+                job.company?.name
+                  ?.split(" ")
+                  ?.map((n: string) => n[0])
+                  ?.join("")
+                  ?.toUpperCase()
+                  ?.slice(0, 2) || "CO";
 
               return (
                 <div
                   key={job._id}
-                  className="flex flex-col bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 group"
+                  className={cn(
+                    "flex flex-col bg-card p-5 sm:p-6 rounded-2xl border border-border",
+                    "shadow-sm hover:shadow-lg hover:shadow-primary/5",
+                    "hover:-translate-y-1 hover:border-primary/20 transition-all duration-200 group",
+                    "animate-fade-slide-up",
+                    `stagger-${Math.min(idx + 1, 6)}`
+                  )}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200/30 dark:border-slate-700/30">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground font-bold border border-border/50 overflow-hidden">
                       {job.company?.logo ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={job.company.logo}
                           alt={job.company.name}
-                          className="h-full w-full object-cover rounded-xl"
+                          className="h-full w-full object-cover"
                         />
                       ) : (
-                        companyInitials
+                        <span className="text-sm font-bold text-muted-foreground">{companyInitials}</span>
                       )}
                     </div>
                     <div className="min-w-0">
-                      <h4 className="font-semibold text-slate-950 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <h4 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors text-sm sm:text-base">
                         {job.title}
                       </h4>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                      <p className="text-sm text-muted-foreground truncate mt-0.5">
                         {job.company?.name || "Company"}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-4">
-                    <Badge className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium">
+                    <Badge variant="outline" className="text-xs">
                       {job.jobType}
                     </Badge>
-                    <Badge className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 font-medium">
+                    <Badge variant="default" className="text-xs">
                       {job.category?.name || "Development"}
                     </Badge>
                   </div>
 
-                  <div className="flex flex-col gap-2 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
+                  <div className="flex flex-col gap-1.5 mt-5 pt-4 border-t border-border text-xs sm:text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 shrink-0 text-slate-400" />
+                      <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
                       <span className="truncate">{job.location}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 shrink-0 text-slate-400" />
+                      <DollarSign className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
                       <span className="truncate">{job.salaryRange}</span>
                     </div>
                   </div>
 
                   <Button
                     variant="outline"
-                    className="w-full mt-6 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white dark:hover:text-white transition-all font-semibold"
+                    className="w-full mt-5 rounded-xl hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all font-semibold text-sm"
                     asChild
                   >
                     <Link href={`/jobs/${job._id}`}>View Details</Link>
@@ -265,44 +335,61 @@ export default function LandingPage() {
         )}
       </section>
 
-      {/* Info Banner Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-900 dark:to-violet-900 py-16 text-white overflow-hidden relative">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:24px_24px]" />
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div className="space-y-6">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+      {/* ── Info Banner / CTA ──────────────────────────────────────────── */}
+      <section className="gradient-brand py-14 sm:py-20 overflow-hidden relative">
+        {/* Grid overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:28px_28px]" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="space-y-6 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-[family-name:var(--font-heading)]">
               Ready to find your dream job or build your business?
             </h2>
-            <p className="text-blue-100 text-lg max-w-lg">
-              Join thousands of professionals and employers today. Complete your profile, build resumes, and apply seamlessly.
+            <p className="text-white/75 text-base sm:text-lg max-w-lg mx-auto lg:mx-0">
+              Join thousands of professionals and employers today. Complete your profile,
+              build resumes, and apply seamlessly.
             </p>
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2 justify-center lg:justify-start">
               <Button
-                className="bg-white hover:bg-slate-50 text-blue-600 font-bold px-6 py-3 rounded-xl shadow-lg shadow-black/10 transition-all"
+                className="bg-white hover:bg-white/90 text-primary font-bold px-6 py-3 h-auto rounded-xl shadow-xl shadow-black/10"
                 asChild
               >
                 <Link href="/register?role=candidate">Join as Candidate</Link>
               </Button>
               <Button
                 variant="outline"
-                className="border-white/40 hover:bg-white/10 text-white font-semibold px-6 py-3 rounded-xl transition-all"
+                className="border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 h-auto rounded-xl"
                 asChild
               >
                 <Link href="/register?role=employer">Join as Company</Link>
               </Button>
             </div>
           </div>
+
           <div className="hidden lg:grid grid-cols-2 gap-4">
-            <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 space-y-2">
-              <CheckCircle className="h-8 w-8 text-blue-300" />
-              <h4 className="font-bold text-lg">Online CV Builder</h4>
-              <p className="text-slate-100 text-sm">Generate printable & downloadable CVs from your profile directly.</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 space-y-2">
-              <Clock className="h-8 w-8 text-blue-300" />
-              <h4 className="font-bold text-lg">Real-time status</h4>
-              <p className="text-slate-100 text-sm">Get notified immediately when recruiters review or update applications.</p>
-            </div>
+            {[
+              {
+                icon: CheckCircle,
+                title: "Online CV Builder",
+                desc: "Generate printable & downloadable CVs from your profile directly.",
+              },
+              {
+                icon: Clock,
+                title: "Real-time Status",
+                desc: "Get notified immediately when recruiters review or update applications.",
+              },
+            ].map((card) => (
+              <div
+                key={card.title}
+                className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/15 space-y-3"
+              >
+                <card.icon className="h-8 w-8 text-white/80" />
+                <h4 className="font-bold text-lg text-white font-[family-name:var(--font-heading)]">
+                  {card.title}
+                </h4>
+                <p className="text-white/65 text-sm leading-relaxed">{card.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

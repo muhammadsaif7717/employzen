@@ -126,7 +126,7 @@ export default function AdminDashboard() {
     <div className="space-y-8 animate-fadeIn">
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+        <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
           <ShieldAlert className="h-8 w-8 text-purple-600 dark:text-purple-400" />
           Job Listings Administration
         </h1>

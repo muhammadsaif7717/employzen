@@ -373,7 +373,7 @@ export default function EmployerDashboard() {
           {/* Welcome & Action Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+              <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
                 Company Dashboard
               </h1>
               <p className="text-slate-500 dark:text-slate-400 mt-1">
@@ -390,7 +390,7 @@ export default function EmployerDashboard() {
             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex items-center justify-between">
               <div className="space-y-1">
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold tracking-wider uppercase">Active Listings</span>
-                <p className="text-3xl font-extrabold text-slate-900 dark:text-white">{totalPosts}</p>
+                <p className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">{totalPosts}</p>
               </div>
               <div className="h-12 w-12 bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                 <Briefcase className="h-6 w-6" />
@@ -400,7 +400,7 @@ export default function EmployerDashboard() {
             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex items-center justify-between">
               <div className="space-y-1">
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold tracking-wider uppercase">Total Job Views</span>
-                <p className="text-3xl font-extrabold text-slate-900 dark:text-white">{totalViews}</p>
+                <p className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">{totalViews}</p>
               </div>
               <div className="h-12 w-12 bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400 rounded-xl flex items-center justify-center">
                 <Eye className="h-6 w-6" />
@@ -410,7 +410,7 @@ export default function EmployerDashboard() {
             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex items-center justify-between">
               <div className="space-y-1">
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold tracking-wider uppercase">Total Applicants</span>
-                <p className="text-3xl font-extrabold text-slate-900 dark:text-white">{totalApplicants}</p>
+                <p className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">{totalApplicants}</p>
               </div>
               <div className="h-12 w-12 bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center">
                 <Users className="h-6 w-6" />

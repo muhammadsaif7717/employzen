@@ -132,7 +132,7 @@ export default function UserManagementPage() {
     <div className="space-y-8 animate-fadeIn">
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+        <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
           <Users className="h-8 w-8 text-blue-500" />
           User Management
         </h1>

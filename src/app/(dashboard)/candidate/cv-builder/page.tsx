@@ -174,7 +174,7 @@ export default function CVBuilderPage() {
       {/* Action Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+          <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
             <FileText className="h-8 w-8 text-blue-500" />
             CV Builder
           </h1>
@@ -543,7 +543,7 @@ export default function CVBuilderPage() {
               {/* CV Header */}
               <div className="border-b-2 border-slate-200 pb-6 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
                 <div>
-                  <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{name || "Jane Doe"}</h1>
+                  <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 tracking-tight">{name || "Jane Doe"}</h1>
                   <p className="text-md font-semibold text-blue-600 mt-1 uppercase tracking-wider">{title || "Your Professional Title"}</p>
                 </div>
                 <div className="text-right text-xs sm:text-sm text-slate-500 space-y-1">
