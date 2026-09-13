@@ -2,21 +2,28 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, ArrowRight, UserCheck, Building2, ShieldAlert, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { register, user, loading } = useAuth();
 
-  const [role, setRole] = useState<UserRole>("candidate");
+  const urlRole = searchParams.get("role") as UserRole | null;
+  const initialRole: UserRole =
+    urlRole === "employer" || urlRole === "admin" || urlRole === "candidate"
+      ? urlRole
+      : "candidate";
+
+  const [role, setRole] = useState<UserRole>(initialRole);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,11 +38,23 @@ export default function RegisterPage() {
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Sync role if URL query changes
+  useEffect(() => {
+    if (urlRole && (urlRole === "employer" || urlRole === "admin" || urlRole === "candidate")) {
+      setRole(urlRole);
+    }
+  }, [urlRole]);
+
   useEffect(() => {
     if (user && !loading) {
       router.push(`/${user.role}`);
     }
   }, [user, loading, router]);
+
+  const handleRoleChange = (newRole: UserRole) => {
+    setRole(newRole);
+    setFormError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,15 +158,15 @@ export default function RegisterPage() {
             <button
               key={value}
               type="button"
-              onClick={() => setRole(value)}
+              onClick={() => handleRoleChange(value)}
               className={cn(
-                "flex flex-col items-center justify-center py-2.5 px-2 rounded-lg text-xs font-semibold transition-all duration-150 gap-1",
+                "flex flex-col items-center justify-center py-2.5 px-2 rounded-lg text-xs font-semibold transition-all duration-150 gap-1 cursor-pointer select-none",
                 role === value
-                  ? "bg-card text-primary shadow-sm border border-border"
+                  ? "bg-card text-primary shadow-sm border border-border font-bold scale-[1.02]"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className={cn("h-4 w-4", role === value ? "text-primary" : "text-muted-foreground")} />
               {label}
             </button>
           ))}
@@ -215,7 +234,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-foreground hover:text-foreground transition-colors focus:outline-none cursor-pointer"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -258,7 +277,7 @@ export default function RegisterPage() {
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
                   className={cn(
-                    "w-full h-10 rounded-xl px-3.5 text-sm outline-none transition-all duration-150",
+                    "w-full h-10 rounded-xl px-3.5 text-sm outline-none transition-all duration-150 cursor-pointer",
                     "bg-muted/50 border border-border text-foreground",
                     "focus:border-primary focus:ring-3 focus:ring-primary/20 focus:bg-background",
                     "hover:border-border/80"
@@ -278,13 +297,20 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {/* Admin info note */}
+          {role === "admin" && (
+            <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl text-xs text-muted-foreground animate-fade-in">
+              Registering as an administrator account. You will have access to the system management dashboard once verified.
+            </div>
+          )}
+
           {/* Submit */}
           <div className="pt-2">
             <Button
               type="submit"
               disabled={isSubmitting}
               variant="gradient"
-              className="w-full h-11 rounded-xl font-bold text-base shadow-lg shadow-primary/20"
+              className="w-full h-11 rounded-xl font-bold text-base shadow-lg shadow-primary/20 cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -302,5 +328,24 @@ export default function RegisterPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex-1 flex items-center justify-center min-h-screen bg-background">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-14 w-14 rounded-2xl gradient-brand flex items-center justify-center">
+              <Loader2 className="h-7 w-7 text-white animate-spin" />
+            </div>
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <RegisterContent />
+    </Suspense>
   );
 }
